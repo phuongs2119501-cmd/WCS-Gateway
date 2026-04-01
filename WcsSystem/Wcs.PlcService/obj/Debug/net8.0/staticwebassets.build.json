@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "czNtKd2DRYUuObjM36w+2o7hkF9cV6xNEi6yI/OKvdU=",
+  "Source": "Wcs.PlcService",
+  "BasePath": "_content/Wcs.PlcService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

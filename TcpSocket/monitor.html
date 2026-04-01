@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>WCS Monitor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #58a6ff;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    #status-bar {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #8b949e;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8b949e;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #21262d;
+      padding-bottom: 6px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #21262d;
+    }
+    .row:last-child { border-bottom: none; }
+
+    .label { color: #8b949e; }
+    .value { font-weight: 600; color: #e6edf3; font-family: monospace; }
+
+    .badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .ok   { background: #0d4429; color: #3fb950; }
+    .fail { background: #3d1a1a; color: #f85149; }
+    .busy { background: #3d2e00; color: #e3b341; }
+    .free { background: #0d4429; color: #3fb950; }
+
+    /* PLC connection header */
+    .plc-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .plc-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+    }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .dot.on  { background: #3fb950; box-shadow: 0 0 6px #3fb950; }
+    .dot.off { background: #f85149; }
+
+    #last-update {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #484f58;
+    }
+
+    /* Controls */
+    .cmd-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #21262d;
+      margin-bottom: 10px;
+    }
+    .cmd-select {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 7px;
+      border: 1px solid #30363d;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+    .cmd-select:focus { border-color: #58a6ff; }
+    
+    .loc-table { display: flex; flex-direction: column; gap: 6px; }
+    .loc-header { font-size: 10px; font-weight: 600; color: #8b949e; }
+    .loc-row {
+      display: grid;
+      grid-template-columns: 36px 1fr 1fr 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+    input[type=number] {
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 7px;
+      border: 1px solid #30363d;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-size: 13px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    input[type=number]:focus { border-color: #58a6ff; }
+    
+    .btn {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 7px;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.96); }
+    .btn-blue { background: #1f6feb; }
+    
+    .location-input-card {
+      grid-column: 1 / -1; /* Make it span full width if needed, or adjust */
+    }
+    @media (min-width: 800px) {
+      .location-input-card { grid-column: auto; } /* Let it act like a normal card on wide screens */
+    }
+  </style>
+</head>
+<body>
+
+<h1>⚙ WCS MONITOR</h1>
+<p id="status-bar">Đang kết nối tới WcsSystem...</p>
+
+<!-- PLC Connection -->
+<div class="plc-row">
+  <div class="plc-chip">
+    <div class="dot off" id="dot1"></div>
+    <span>PLC 1</span>
+    <span id="plc1-text" style="color:#8b949e">--</span>
+  </div>
+  <div class="plc-chip">
+    <div class="dot off" id="dot2"></div>
+    <span>PLC 2</span>
+    <span id="plc2-text" style="color:#8b949e">--</span>
+  </div>
+</div>
+
+<!-- Data grid -->
+<div class="grid">
+
+  <!-- Barcode -->
+  <div class="card">
+    <div class="card-title">📦 Barcode</div>
+    <div class="row">
+      <span class="label">PLC 1</span>
+      <span class="value" id="bc1">--</span>
+    </div>
+    <div class="row">
+      <span class="label">PLC 2</span>
+      <span class="value" id="bc2">--</span>
+    </div>
+  </div>
+
+  <!-- Crane 1 -->
+  <div class="card">
+    <div class="card-title">🏗 Crane 1</div>
+    <div class="row"><span class="label">X</span><span class="value" id="c1x">--</span></div>
+    <div class="row"><span class="label">Z</span><span class="value" id="c1z">--</span></div>
+    <div class="row"><span class="label">Trạng thái</span><span id="c1s">--</span></div>
+    <div class="row"><span class="label">Lỗi</span><span class="value" id="c1e">--</span></div>
+  </div>
+
+  <!-- Crane 2 -->
+  <div class="card">
+    <div class="card-title">🏗 Crane 2</div>
+    <div class="row"><span class="label">X</span><span class="value" id="c2x">--</span></div>
+    <div class="row"><span class="label">Z</span><span class="value" id="c2z">--</span></div>
+    <div class="row"><span class="label">Trạng thái</span><span id="c2s">--</span></div>
+    <div class="row"><span class="label">Lỗi</span><span class="value" id="c2e">--</span></div>
+  </div>
+
+  <!-- Shuttle 1 -->
+  <div class="card">
+    <div class="card-title">🚌 Shuttle 1</div>
+    <div class="row"><span class="label">X</span><span class="value" id="s1x">--</span></div>
+    <div class="row"><span class="label">Z</span><span class="value" id="s1z">--</span></div>
+    <div class="row"><span class="label">B</span><span class="value" id="s1b">--</span></div>
+    <div class="row"><span class="label">Trạng thái</span><span id="s1s">--</span></div>
+    <div class="row"><span class="label">Pin</span><span class="value" id="s1p">--</span></div>
+  </div>
+
+  <!-- Shuttle 2 -->
+  <div class="card">
+    <div class="card-title">🚗 Shuttle 2</div>
+    <div class="row"><span class="label">X</span><span class="value" id="s2x">--</span></div>
+    <div class="row"><span class="label">Z</span><span class="value" id="s2z">--</span></div>
+    <div class="row"><span class="label">B</span><span class="value" id="s2b">--</span></div>
+    <div class="row"><span class="label">Trạng thái</span><span id="s2s">--</span></div>
+    <div class="row"><span class="label">Pin</span><span class="value" id="s2p">--</span></div>
+  </div>
+
+  <!-- Location Input -->
+  <div class="card location-input-card">
+    <div class="card-title">📤 Location Input</div>
+    <div class="cmd-row">
+      <span class="label">COMMAND</span>
+      <select id="CommandType" class="cmd-select">
+        <option value="1">1 — Nhập Pallet</option>
+        <option value="2">2 — Xuất Pallet</option>
+        <option value="3">3 — Chuyển Pallet</option>
+      </select>
+    </div>
+    <div class="loc-table">
+      <div class="loc-row loc-header">
+        <span></span><span>X</span><span>Z</span><span>B</span>
+      </div>
+      <div class="loc-row">
+        <span class="label">IN</span>
+        <input id="Xin" type="number" placeholder="0">
+        <input id="Zin" type="number" placeholder="0">
+        <input id="Bin" type="number" placeholder="0">
+      </div>
+      <div class="loc-row">
+        <span class="label">OUT</span>
+        <input id="Xout" type="number" placeholder="0">
+        <input id="Zout" type="number" placeholder="0">
+        <input id="Bout" type="number" placeholder="0">
+      </div>
+    </div>
+    <button class="btn btn-blue" style="margin-top:14px;width:100%" onclick="sendLocation()">📤 SEND LOCATION</button>
+  </div>
+
+  <!-- System State PLC 1 -->
+  <div class="card">
+    <div class="card-title">⚙️ System — PLC 1</div>
+    <div class="row"><span class="label">Mode</span><span id="sy1-mode">--</span></div>
+    <div class="row"><span class="label">Running</span><span id="sy1-run">--</span></div>
+    <div class="row"><span class="label">Stop</span><span id="sy1-stop">--</span></div>
+    <div class="row"><span class="label">Error</span><span id="sy1-err">--</span></div>
+    <div class="row"><span class="label">Error Code</span><span class="value" id="sy1-code">--</span></div>
+  </div>
+
+  <!-- System State PLC 2 -->
+  <div class="card">
+    <div class="card-title">⚙️ System — PLC 2</div>
+    <div class="row"><span class="label">Mode</span><span id="sy2-mode">--</span></div>
+    <div class="row"><span class="label">Running</span><span id="sy2-run">--</span></div>
+    <div class="row"><span class="label">Stop</span><span id="sy2-stop">--</span></div>
+    <div class="row"><span class="label">Error</span><span id="sy2-err">--</span></div>
+    <div class="row"><span class="label">Error Code</span><span class="value" id="sy2-code">--</span></div>
+  </div>
+
+</div>
+
+<p id="last-update">--</p>
+
+<script>
+  const API = "http://127.0.0.1:5000/status";
+  const statusBar = document.getElementById("status-bar");
+
+  function badge(busy, free, error) {
+    if (error) return '<span class="badge fail">ERROR</span>';
+    if (busy)  return '<span class="badge busy">BUSY</span>';
+    if (free)  return '<span class="badge free">FREE</span>';
+    return '<span class="badge" style="background:#21262d;color:#8b949e">IDLE</span>';
+  }
+
+  function boolBadge(val, trueLabel, trueClass, falseLabel) {
+    if (val) return `<span class="badge ${trueClass}">${trueLabel}</span>`;
+    return `<span class="badge" style="background:#21262d;color:#8b949e">${falseLabel}</span>`;
+  }
+
+  function setDot(id, textId, connected) {
+    const dot  = document.getElementById(id);
+    const text = document.getElementById(textId);
+    dot.className  = "dot " + (connected ? "on" : "off");
+    text.textContent = connected ? "Connected" : "Offline";
+    text.style.color = connected ? "#3fb950" : "#f85149";
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = (val !== null && val !== undefined && val !== "") ? val : "--";
+  }
+
+  function setHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  async function fetchData() {
+    try {
+      const res  = await fetch(API, { cache: "no-store" });
+      const data = await res.json();
+
+      statusBar.textContent = "✅ Đang kết nối — tự động làm mới mỗi 1 giây";
+      statusBar.style.color = "#3fb950";
+
+      // PLC
+      setDot("dot1", "plc1-text", data.plc1);
+      setDot("dot2", "plc2-text", data.plc2);
+
+      // Barcode
+      setText("bc1", data.barcode1);
+      setText("bc2", data.barcode2);
+
+      // Crane 1
+      setText("c1x",  data.crane1?.x);
+      setText("c1z",  data.crane1?.z);
+      setHtml("c1s",  badge(data.crane1?.busy, data.crane1?.free, data.crane1?.error));
+      setText("c1e",  data.crane1?.error ? data.crane1?.errorCode : "OK");
+
+      // Crane 2
+      setText("c2x",  data.crane2?.x);
+      setText("c2z",  data.crane2?.z);
+      setHtml("c2s",  badge(data.crane2?.busy, data.crane2?.free, data.crane2?.error));
+      setText("c2e",  data.crane2?.error ? data.crane2?.errorCode : "OK");
+
+      // Shuttle 1
+      setText("s1x",  data.shuttle1?.x);
+      setText("s1z",  data.shuttle1?.z);
+      setText("s1b",  data.shuttle1?.b);
+      setHtml("s1s",  badge(data.shuttle1?.busy, data.shuttle1?.free, data.shuttle1?.error));
+      setText("s1p",  data.shuttle1?.pin);
+
+      // Shuttle 2
+      setText("s2x",  data.shuttle2?.x);
+      setText("s2z",  data.shuttle2?.z);
+      setText("s2b",  data.shuttle2?.b);
+      setHtml("s2s",  badge(data.shuttle2?.busy, data.shuttle2?.free, data.shuttle2?.error));
+      setText("s2p",  data.shuttle2?.pin);
+
+      // System State PLC 1
+      const sy1 = data.system1 || {};
+      setHtml("sy1-mode",  boolBadge(sy1.auto,    "AUTO",    "free",  "MANUAL"));
+      setHtml("sy1-run",   boolBadge(sy1.running, "RUNNING", "free",  "STOPPED"));
+      setHtml("sy1-stop",  boolBadge(sy1.stop,    "STOP",    "busy",  "OK"));
+      setHtml("sy1-err",   boolBadge(sy1.error,   "ERROR",   "fail",  "OK"));
+      document.getElementById("sy1-code").textContent =
+        (sy1.errorCode !== null && sy1.errorCode !== undefined) ? sy1.errorCode : "--";
+
+      // System State PLC 2
+      const sy2 = data.system2 || {};
+      setHtml("sy2-mode",  boolBadge(sy2.auto,    "AUTO",    "free",  "MANUAL"));
+      setHtml("sy2-run",   boolBadge(sy2.running, "RUNNING", "free",  "STOPPED"));
+      setHtml("sy2-stop",  boolBadge(sy2.stop,    "STOP",    "busy",  "OK"));
+      setHtml("sy2-err",   boolBadge(sy2.error,   "ERROR",   "fail",  "OK"));
+      document.getElementById("sy2-code").textContent =
+        (sy2.errorCode !== null && sy2.errorCode !== undefined) ? sy2.errorCode : "--";
+
+      document.getElementById("last-update").textContent =
+        "Cập nhật lúc: " + new Date().toLocaleTimeString("vi-VN");
+
+    } catch (err) {
+      statusBar.textContent = "❌ Không kết nối được WcsSystem (http://127.0.0.1:5000)";
+      statusBar.style.color = "#f85149";
+    }
+  }
+
+  async function sendLocation() {
+    const cmdType = parseInt(document.getElementById('CommandType').value) || 1;
+    const data = {
+      CommandType: cmdType,
+      Xin:  parseInt(document.getElementById('Xin').value)  || 0,
+      Zin:  parseInt(document.getElementById('Zin').value)  || 0,
+      Bin:  parseInt(document.getElementById('Bin').value)  || 0,
+      Xout: parseInt(document.getElementById('Xout').value) || 0,
+      Zout: parseInt(document.getElementById('Zout').value) || 0,
+      Bout: parseInt(document.getElementById('Bout').value) || 0
+    };
+    
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/location/send", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        const sel = document.getElementById('CommandType');
+        sel.style.borderColor = '#3fb950';
+        setTimeout(() => sel.style.borderColor = '#30363d', 1500);
+      } else {
+        alert("Failed to send location.");
+      }
+    } catch(e) {
+      alert("Error reaching API: " + e.message);
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, 1000);
+</script>
+</body>
+</html>
