@@ -166,10 +166,10 @@
     .btn-blue { background: #1f6feb; }
     
     .location-input-card {
-      grid-column: 1 / -1; /* Make it span full width if needed, or adjust */
+      grid-column: 1 / -1; 
     }
     @media (min-width: 800px) {
-      .location-input-card { grid-column: auto; } /* Let it act like a normal card on wide screens */
+      .location-input-card { grid-column: auto; }
     }
   </style>
 </head>
@@ -200,11 +200,17 @@
     <div class="card-title">📦 Barcode</div>
     <div class="row">
       <span class="label">PLC 1</span>
-      <span class="value" id="bc1">--</span>
+      <div>
+        <span class="value" id="bc1" style="color:#38bdf8;">--</span>
+        <span id="bc1-status" style="margin-left: 8px;"></span>
+      </div>
     </div>
     <div class="row">
       <span class="label">PLC 2</span>
-      <span class="value" id="bc2">--</span>
+      <div>
+        <span class="value" id="bc2" style="color:#a78bfa;">--</span>
+        <span id="bc2-status" style="margin-left: 8px;"></span>
+      </div>
     </div>
   </div>
 
@@ -248,14 +254,10 @@
 
   <!-- Location Input -->
   <div class="card location-input-card">
-    <div class="card-title">📤 Location Input</div>
+    <div class="card-title">📤 Location Input (Read-only status)</div>
     <div class="cmd-row">
       <span class="label">COMMAND</span>
-      <select id="CommandType" class="cmd-select">
-        <option value="1">1 — Nhập Pallet</option>
-        <option value="2">2 — Xuất Pallet</option>
-        <option value="3">3 — Chuyển Pallet</option>
-      </select>
+      <span class="value" id="disp-CommandType" style="color:#3fb950">--</span>
     </div>
     <div class="loc-table">
       <div class="loc-row loc-header">
@@ -263,18 +265,21 @@
       </div>
       <div class="loc-row">
         <span class="label">IN</span>
-        <input id="Xin" type="number" placeholder="0">
-        <input id="Zin" type="number" placeholder="0">
-        <input id="Bin" type="number" placeholder="0">
+        <span class="value" id="disp-Xin">--</span>
+        <span class="value" id="disp-Zin">--</span>
+        <span class="value" id="disp-Bin">--</span>
       </div>
       <div class="loc-row">
         <span class="label">OUT</span>
-        <input id="Xout" type="number" placeholder="0">
-        <input id="Zout" type="number" placeholder="0">
-        <input id="Bout" type="number" placeholder="0">
+        <span class="value" id="disp-Xout">--</span>
+        <span class="value" id="disp-Zout">--</span>
+        <span class="value" id="disp-Bout">--</span>
       </div>
     </div>
-    <button class="btn btn-blue" style="margin-top:14px;width:100%" onclick="sendLocation()">📤 SEND LOCATION</button>
+    <div class="cmd-row" style="margin-top: 14px; border-bottom: none;">
+      <span class="label">Mode Crane & Shuttle</span>
+      <span class="value" id="disp-ModeCraneShuttle" style="color:#58a6ff">--</span>
+    </div>
   </div>
 
   <!-- System State PLC 1 -->
@@ -302,8 +307,14 @@
 <p id="last-update">--</p>
 
 <script>
-  const API = "http://127.0.0.1:5000/status";
+  const API = "http://localhost:5000/api/status";
   const statusBar = document.getElementById("status-bar");
+
+  function barcodeBadge(ok, ng) {
+    if (ok) return '<span class="badge free">OK</span>';
+    if (ng) return '<span class="badge fail">NG</span>';
+    return '<span class="badge" style="background:#21262d;color:#8b949e">--</span>';
+  }
 
   function badge(busy, free, error) {
     if (error) return '<span class="badge fail">ERROR</span>';
@@ -348,8 +359,11 @@
       setDot("dot2", "plc2-text", data.plc2);
 
       // Barcode
-      setText("bc1", data.barcode1);
-      setText("bc2", data.barcode2);
+      setText("bc1", data.barcode1 || "---");
+      setHtml("bc1-status", barcodeBadge(data.barcodeOk1, data.barcodeNg1));
+
+      setText("bc2", data.barcode2 || "---");
+      setHtml("bc2-status", barcodeBadge(data.barcodeOk2, data.barcodeNg2));
 
       // Crane 1
       setText("c1x",  data.crane1?.x);
@@ -395,44 +409,32 @@
       document.getElementById("sy2-code").textContent =
         (sy2.errorCode !== null && sy2.errorCode !== undefined) ? sy2.errorCode : "--";
 
+      // Last Location Cmd
+      const loc = data.lastLocation || {};
+      let cmdText = "--";
+      if (loc.commandType === 1) cmdText = "1 — Nhập Pallet";
+      else if (loc.commandType === 2) cmdText = "2 — Xuất Pallet";
+      else if (loc.commandType === 3) cmdText = "3 — Chuyển Pallet";
+      
+      setText('disp-CommandType', cmdText);
+      setText('disp-Xin', loc.xin);
+      setText('disp-Zin', loc.zin);
+      setText('disp-Bin', loc.bin);
+      setText('disp-Xout', loc.xout);
+      setText('disp-Zout', loc.zout);
+      setText('disp-Bout', loc.bout);
+
+      setText('disp-ModeCraneShuttle', data.modeCraneShuttle);
+
       document.getElementById("last-update").textContent =
         "Cập nhật lúc: " + new Date().toLocaleTimeString("vi-VN");
 
     } catch (err) {
-      statusBar.textContent = "❌ Không kết nối được WcsSystem (http://127.0.0.1:5000)";
+      statusBar.textContent = "❌ Không kết nối được WcsSystem (http://localhost:5000)";
       statusBar.style.color = "#f85149";
     }
   }
 
-  async function sendLocation() {
-    const cmdType = parseInt(document.getElementById('CommandType').value) || 1;
-    const data = {
-      CommandType: cmdType,
-      Xin:  parseInt(document.getElementById('Xin').value)  || 0,
-      Zin:  parseInt(document.getElementById('Zin').value)  || 0,
-      Bin:  parseInt(document.getElementById('Bin').value)  || 0,
-      Xout: parseInt(document.getElementById('Xout').value) || 0,
-      Zout: parseInt(document.getElementById('Zout').value) || 0,
-      Bout: parseInt(document.getElementById('Bout').value) || 0
-    };
-    
-    try {
-      const res = await fetch("http://127.0.0.1:5000/api/location/send", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        const sel = document.getElementById('CommandType');
-        sel.style.borderColor = '#3fb950';
-        setTimeout(() => sel.style.borderColor = '#30363d', 1500);
-      } else {
-        alert("Failed to send location.");
-      }
-    } catch(e) {
-      alert("Error reaching API: " + e.message);
-    }
-  }
 
   fetchData();
   setInterval(fetchData, 1000);

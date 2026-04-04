@@ -21,9 +21,9 @@ builder.Services.AddCors(options =>
 });
 
 //
-// 🔹 MVC Web
+// 🔹 Xóa MVC, chỉ dùng Web API
 //
-builder.Services.AddControllersWithViews()
+builder.Services.AddControllers()
     .AddJsonOptions(opt =>
         opt.JsonSerializerOptions.PropertyNamingPolicy =
             System.Text.Json.JsonNamingPolicy.CamelCase);
@@ -78,6 +78,6 @@ app.UseStaticFiles();
 app.UseCors("AllowAll");
 app.UseRouting();
 
-app.MapDefaultControllerRoute();
+app.MapControllers();
 
 app.Run();

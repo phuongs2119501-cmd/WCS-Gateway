@@ -24,13 +24,7 @@ namespace Wcs.PlcService.Controllers
             _state = state;
         }
 
-        //
-        // 📊 DASHBOARD PAGE
-        //
-        public IActionResult Index()
-        {
-            return View();
-        }
+// Dashboard page logic has been moved to TestTools/wcs_monitor.html
 
         //
         // 📡 API: Dashboard Status
