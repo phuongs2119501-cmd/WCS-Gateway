@@ -202,6 +202,7 @@
       <span class="label">PLC 1</span>
       <div>
         <span class="value" id="bc1" style="color:#38bdf8;">--</span>
+        <span class="badge" id="gate1" style="margin-left: 8px; background:#233045; color:#58a6ff;">--</span>
         <span id="bc1-status" style="margin-left: 8px;"></span>
       </div>
     </div>
@@ -209,6 +210,7 @@
       <span class="label">PLC 2</span>
       <div>
         <span class="value" id="bc2" style="color:#a78bfa;">--</span>
+        <span class="badge" id="gate2" style="margin-left: 8px; background:#233045; color:#a78bfa;">--</span>
         <span id="bc2-status" style="margin-left: 8px;"></span>
       </div>
     </div>
@@ -307,7 +309,7 @@
 <p id="last-update">--</p>
 
 <script>
-  const API = "http://localhost:5000/api/status";
+  const API = "http://localhost:5000/status";
   const statusBar = document.getElementById("status-bar");
 
   function barcodeBadge(ok, ng) {
@@ -360,9 +362,11 @@
 
       // Barcode
       setText("bc1", data.barcode1 || "---");
+      setText("gate1", (data.gate1 !== null && data.gate1 !== undefined) ? data.gate1 : "--");
       setHtml("bc1-status", barcodeBadge(data.barcodeOk1, data.barcodeNg1));
 
       setText("bc2", data.barcode2 || "---");
+      setText("gate2", (data.gate2 !== null && data.gate2 !== undefined) ? data.gate2 : "--");
       setHtml("bc2-status", barcodeBadge(data.barcodeOk2, data.barcodeNg2));
 
       // Crane 1

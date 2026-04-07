@@ -97,7 +97,9 @@ public class S7Connector
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_tag}] Write bool error: {ex.Message}");
+                if (_loggedErrors.Add($"WBool:{address}"))
+                    Console.WriteLine($"[{_tag}] Write bool error [{address}]: {ex.Message}");
+                    
                 if (!IsAddressError(ex)) MarkDisconnected();
                 return false;
             }
@@ -118,7 +120,9 @@ public class S7Connector
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_tag}] Write int error: {ex.Message}");
+                if (_loggedErrors.Add($"WInt:{address}"))
+                    Console.WriteLine($"[{_tag}] Write int error [{address}]: {ex.Message}");
+                    
                 if (!IsAddressError(ex)) MarkDisconnected();
                 return false;
             }

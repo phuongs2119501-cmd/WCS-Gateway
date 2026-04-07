@@ -18,7 +18,11 @@ namespace Wcs.PlcService.Models
 
         // 📦 Barcode — đọc độc lập từng PLC
         public string Barcode1 { get; set; } = "";  // Barcode từ PLC1
+        public ushort Gate1 { get; set; }           // Cổng từ PLC1 (Gate 1, 3)
+
         public string Barcode2 { get; set; } = "";  // Barcode từ PLC2
+        public ushort Gate2 { get; set; }           // Cổng từ PLC2 (Gate 2, 4)
+
         public bool BarcodeOk1 { get; set; }
         public bool BarcodeNg1 { get; set; }
         public bool BarcodeOk2 { get; set; }

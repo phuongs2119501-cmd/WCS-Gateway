@@ -36,6 +36,11 @@ namespace Wcs.PlcService.Services
         private const string BARCODE_OK = "DB500.DBX46.0";  // Biến barcode hợp lệ
         private const string BARCODE_NG = "DB500.DBX46.1";  // Biến barcode không hợp lệ
 
+        //
+        // GATE READING (DB500.DBW70)
+        //
+        private const string GATE_ADDRESS = "DB500.DBW70";
+
         public PlcBarcodeReader(Plc1Connector plc1, Plc2Connector plc2, SystemState state)
         {
             _plc1  = plc1;
@@ -55,12 +60,19 @@ namespace Wcs.PlcService.Services
             var b1 = ReadBarcodeFrom(_plc1);
             var b2 = ReadBarcodeFrom(_plc2);
 
+            // Đọc thêm mã Gate hiện tại
+            _plc1.TryRead<ushort>(GATE_ADDRESS, out ushort gate1);
+            _plc2.TryRead<ushort>(GATE_ADDRESS, out ushort gate2);
+
             // Chỉ log khi barcode thay đổi
-            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\""); _lastBarcode1 = b1; }
-            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\""); _lastBarcode2 = b2; }
+            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\" (Gate {gate1})"); _lastBarcode1 = b1; }
+            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\" (Gate {gate2})"); _lastBarcode2 = b2; }
 
             _state.Barcode1 = b1;
+            _state.Gate1 = gate1;
+
             _state.Barcode2 = b2;
+            _state.Gate2 = gate2;
 
             // Đọc trạng thái OK, NG từ PLC 1
             if (_plc1.TryRead<bool>(BARCODE_OK, out bool ok1) &&
