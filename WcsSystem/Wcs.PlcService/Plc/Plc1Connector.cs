@@ -8,5 +8,10 @@ namespace Wcs.PlcService.Plc
             : base(settings, "PLC1")
         {
         }
+
+        public Plc1Connector(PlcSettings settings, IS7Backend backend)
+            : base(settings, backend, "PLC1")
+        {
+        }
     }
 }

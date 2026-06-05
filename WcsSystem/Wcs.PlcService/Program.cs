@@ -1,13 +1,16 @@
 using Wcs.PlcService.Models;
 using Wcs.PlcService.Plc;
+using Wcs.PlcService.Plc.Sim;
 using Wcs.PlcService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("Config/sim-fixture.json", optional: true, reloadOnChange: true);
+var simFixture = builder.Configuration.GetSection("SimFixture").Get<SimFixture>() ?? new SimFixture();
 
 //
 // 🔹 Cho phép truy cập từ máy khác trong LAN
 //
-builder.WebHost.UseUrls("http://0.0.0.0:5000");
+builder.WebHost.UseUrls("http://0.0.0.0:5050");
 
 //
 // 🔹 CORS — cho phép monitor.html (file://) gọi API
@@ -37,7 +40,7 @@ builder.Services.AddSingleton<Plc1Connector>(sp =>
 		.GetSection("Plc1Settings")
 		.Get<PlcSettings>()!;
 
-	return new Plc1Connector(settings);
+	return new Plc1Connector(settings, CreateBackend(settings, simFixture.Plc1, simFixture, "PLC1"));
 });
 
 //
@@ -49,7 +52,7 @@ builder.Services.AddSingleton<Plc2Connector>(sp =>
 		.GetSection("Plc2Settings")
 		.Get<PlcSettings>()!;
 
-	return new Plc2Connector(settings);
+	return new Plc2Connector(settings, CreateBackend(settings, simFixture.Plc2, simFixture, "PLC2"));
 });
 
 //
@@ -81,3 +84,12 @@ app.UseRouting();
 app.MapControllers();
 
 app.Run();
+
+static IS7Backend CreateBackend(PlcSettings settings, PlcSimFixture plcFixture, SimFixture simFixture, string tag)
+{
+    if (!settings.UseMock)
+        return new RealS7Backend(settings);
+
+    Console.WriteLine($"[{tag}] UseMock=true -> SimS7Backend DB500");
+    return new SimS7Backend(plcFixture, simFixture.TicksPerMove);
+}

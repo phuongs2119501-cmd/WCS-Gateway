@@ -26,20 +26,20 @@ namespace Wcs.PlcService.Services
         //
         // BARCODE — 14 ký tự, DB500 offset 32.0 → 45.0
         //
-        private const int    DB_NUMBER      = 500;
-        private const int    CHAR_START     = 32;   // DBB32 = Char_0
-        private const int    CHAR_COUNT     = 14;   // Char_0 .. Char_13
+        private const int    DB_NUMBER      = Db500Map.barcodeDbNumber;
+        private const int    CHAR_START     = Db500Map.barcodeByteStart;   // DBB32 = Char_0
+        private const int    CHAR_COUNT     = Db500Map.barcodeLength;      // Char_0 .. Char_13
 
         //
         // BARCODE RESULT FLAGS (DB500)
         //
-        private const string BARCODE_OK = "DB500.DBX46.0";  // Biến barcode hợp lệ
-        private const string BARCODE_NG = "DB500.DBX46.1";  // Biến barcode không hợp lệ
+        private const string BARCODE_OK = Db500Map.barcodeOk;  // Biến barcode hợp lệ
+        private const string BARCODE_NG = Db500Map.barcodeNg;  // Biến barcode không hợp lệ
 
         //
         // GATE READING (DB500.DBW70)
         //
-        private const string GATE_ADDRESS = "DB500.DBW70";
+        private const string GATE_ADDRESS = Db500Map.gate;
 
         public PlcBarcodeReader(Plc1Connector plc1, Plc2Connector plc2, SystemState state)
         {

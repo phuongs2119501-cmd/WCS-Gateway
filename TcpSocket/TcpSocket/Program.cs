@@ -11,11 +11,11 @@ using System.Text.Json;
  *   "GET_STATUS"  → Server lấy dữ liệu từ WcsSystem (HTTP) rồi trả về JSON.
  *   "PING"        → Server trả về "PONG"
  *
- * WcsSystem phải đang chạy tại http://127.0.0.1:5000
+ * WcsSystem phải đang chạy tại http://127.0.0.1:5050
  * ─────────────────────────────────────────────────────────────
  */
 
-const string WCS_STATUS_URL = "http://127.0.0.1:5000/status";
+const string WCS_STATUS_URL = "http://127.0.0.1:5050/status";
 const int    TCP_PORT       = 9000;
 
 // HttpClient dùng chung cho toàn bộ vòng lặp
@@ -102,7 +102,7 @@ static async Task<string> FetchWcsStatusAsync(HttpClient httpClient)
     try
     {
         // Gọi HTTP GET đến WcsSystem
-        string json = await httpClient.GetStringAsync("http://127.0.0.1:5000/status");
+        string json = await httpClient.GetStringAsync("http://127.0.0.1:5050/status");
 
         // Parse và format lại để in log đẹp
         using var doc = JsonDocument.Parse(json);
@@ -128,7 +128,7 @@ static async Task<string> FetchWcsStatusAsync(HttpClient httpClient)
         {
             error   = "WcsSystem unreachable",
             detail  = ex.Message,
-            hint    = "Make sure WcsSystem is running on http://127.0.0.1:5000"
+            hint    = "Make sure WcsSystem is running on http://127.0.0.1:5050"
         });
     }
     catch (TaskCanceledException)

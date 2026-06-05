@@ -35,23 +35,23 @@ namespace Wcs.PlcService.Services
 		}
 
 		// POSITION
-		private const string XCRANE1 = "DB500.DBW54";
-		private const string ZCRANE1 = "DB500.DBW56";
+		private const string XCRANE1 = Db500Map.craneX;
+		private const string ZCRANE1 = Db500Map.craneZ;
 
-		private const string XCRANE2 = "DB500.DBW54";
-		private const string ZCRANE2 = "DB500.DBW56";
+		private const string XCRANE2 = Db500Map.craneX;
+		private const string ZCRANE2 = Db500Map.craneZ;
 
 		// STATE — Crane 1 (PLC1 → DB500)
-		private const string CRANE1_FREE       = "DB500.DBX16.0";
-		private const string CRANE1_BUSY       = "DB500.DBX16.1";
-		private const string CRANE1_ERROR      = "DB500.DBX16.2";
-		private const string CRANE1_ERROR_CODE = "DB500.DBW18";
+		private const string CRANE1_FREE       = Db500Map.craneFree;
+		private const string CRANE1_BUSY       = Db500Map.craneBusy;
+		private const string CRANE1_ERROR      = Db500Map.craneError;
+		private const string CRANE1_ERROR_CODE = Db500Map.craneErrorCode;
 
 		// STATE — Crane 2 (PLC2 → cùng DB500, chỉ khác connector)
-		private const string CRANE2_FREE       = "DB500.DBX16.0";
-		private const string CRANE2_BUSY       = "DB500.DBX16.1";
-		private const string CRANE2_ERROR      = "DB500.DBX16.2";
-		private const string CRANE2_ERROR_CODE = "DB500.DBW18";
+		private const string CRANE2_FREE       = Db500Map.craneFree;
+		private const string CRANE2_BUSY       = Db500Map.craneBusy;
+		private const string CRANE2_ERROR      = Db500Map.craneError;
+		private const string CRANE2_ERROR_CODE = Db500Map.craneErrorCode;
 
 		public void Update()
 		{

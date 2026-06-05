@@ -37,16 +37,16 @@ namespace Wcs.PlcService.Services
 		//
 		// POSITION — Shuttle 1 (DB500, địa chỉ theo ảnh)
 		//
-		private const string XSHUTTLE1 = "DB500.DBW58";
-		private const string ZSHUTTLE1 = "DB500.DBW60";
-		private const string BSHUTTLE1 = "DB500.DBW62";
+		private const string XSHUTTLE1 = Db500Map.shuttle1X;
+		private const string ZSHUTTLE1 = Db500Map.shuttle1Z;
+		private const string BSHUTTLE1 = Db500Map.shuttle1B;
 
 		//
 		// POSITION — Shuttle 2 (DB500, địa chỉ theo ảnh)
 		//
-		private const string XSHUTTLE2 = "DB500.DBW64";
-		private const string ZSHUTTLE2 = "DB500.DBW66";
-		private const string BSHUTTLE2 = "DB500.DBW68";
+		private const string XSHUTTLE2 = Db500Map.shuttle2X;
+		private const string ZSHUTTLE2 = Db500Map.shuttle2Z;
+		private const string BSHUTTLE2 = Db500Map.shuttle2B;
 
 		//
 		// STATE — Shuttle 1 (DB500, địa chỉ theo ảnh)
@@ -56,11 +56,11 @@ namespace Wcs.PlcService.Services
 		//  Error Code→ DB500.DBW22
 		//  Battery   → DB500.DBW24
 		//
-		private const string SHUTTLE1_FREE       = "DB500.DBX20.0";
-		private const string SHUTTLE1_BUSY       = "DB500.DBX20.1";
-		private const string SHUTTLE1_ERROR      = "DB500.DBX20.2";
-		private const string SHUTTLE1_ERROR_CODE = "DB500.DBW22";
-		private const string SHUTTLE1_PIN        = "DB500.DBW24";
+		private const string SHUTTLE1_FREE       = Db500Map.shuttle1Free;
+		private const string SHUTTLE1_BUSY       = Db500Map.shuttle1Busy;
+		private const string SHUTTLE1_ERROR      = Db500Map.shuttle1Error;
+		private const string SHUTTLE1_ERROR_CODE = Db500Map.shuttle1ErrorCode;
+		private const string SHUTTLE1_PIN        = Db500Map.shuttle1Battery;
 
 		//
 		// STATE — Shuttle 2 (DB500, địa chỉ theo ảnh)
@@ -70,11 +70,11 @@ namespace Wcs.PlcService.Services
 		//  Error Code→ DB500.DBW28
 		//  Battery   → DB500.DBW30
 		//
-		private const string SHUTTLE2_FREE       = "DB500.DBX26.0";
-		private const string SHUTTLE2_BUSY       = "DB500.DBX26.1";
-		private const string SHUTTLE2_ERROR      = "DB500.DBX26.2";
-		private const string SHUTTLE2_ERROR_CODE = "DB500.DBW28";
-		private const string SHUTTLE2_PIN        = "DB500.DBW30";
+		private const string SHUTTLE2_FREE       = Db500Map.shuttle2Free;
+		private const string SHUTTLE2_BUSY       = Db500Map.shuttle2Busy;
+		private const string SHUTTLE2_ERROR      = Db500Map.shuttle2Error;
+		private const string SHUTTLE2_ERROR_CODE = Db500Map.shuttle2ErrorCode;
+		private const string SHUTTLE2_PIN        = Db500Map.shuttle2Battery;
 
 		//
 		// MAIN UPDATE

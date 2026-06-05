@@ -23,11 +23,11 @@ namespace Wcs.PlcService.Services
         private readonly SystemState   _state;
 
         // ── Địa chỉ DB500 ───────────────────────────────────
-        private const string AUTO_MODE  = "DB500.DBX50.0";
-        private const string RUNNING    = "DB500.DBX50.1";
-        private const string STOP       = "DB500.DBX50.2";
-        private const string ERROR      = "DB500.DBX50.3";
-        private const string ERROR_CODE = "DB500.DBW52";
+        private const string AUTO_MODE  = Db500Map.sysAuto;
+        private const string RUNNING    = Db500Map.sysRunning;
+        private const string STOP       = Db500Map.sysStop;
+        private const string ERROR      = Db500Map.sysError;
+        private const string ERROR_CODE = Db500Map.sysErrorCode;
 
         // ── Track thay đổi — chỉ log khi khác lần trước ────
         private bool   _p1Auto, _p1Running, _p1Stop, _p1Error;

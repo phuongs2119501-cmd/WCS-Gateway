@@ -12,5 +12,8 @@ namespace Wcs.PlcService.Models
 
         // Thêm CpuType để phân biệt 1200 / 1500
         public CpuType CpuType { get; set; }
+
+        // UseMock=true: chay fake-PLC DB500 trong RAM, khong ket noi PLC that
+        public bool UseMock { get; set; }
     }
 }

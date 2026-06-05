@@ -25,15 +25,15 @@ namespace Wcs.PlcService.Services
 		//   Req_ExportPallet  → DB500.DBX0.1  (Lệnh Xuất Pallet)
 		//   Req_TransferPallet→ DB500.DBX0.2  (Lệnh Chuyển Pallet)
 		//
-		private const string REQ_IMPORT_PALLET   = "DB500.DBX0.0";
-		private const string REQ_EXPORT_PALLET   = "DB500.DBX0.1";
-		private const string REQ_TRANSFER_PALLET = "DB500.DBX0.2";
+		private const string REQ_IMPORT_PALLET   = Db500Map.reqImportPallet;
+		private const string REQ_EXPORT_PALLET   = Db500Map.reqExportPallet;
+		private const string REQ_TRANSFER_PALLET = Db500Map.reqTransferPallet;
 
 		//
 		// COMPLETE — PLC báo xong: đọc từ đúng PLC đã nhận lệnh
 		//
-		private const string PLC1_DONE = "DB500.DBX48.0";
-		private const string PLC2_DONE = "DB500.DBX48.0";
+		private const string PLC1_DONE = Db500Map.plcDone;
+		private const string PLC2_DONE = Db500Map.plcDone;
 
 		//
 		// MODE CRANE SHUTTLE  (Int, offset 2.0)
@@ -42,30 +42,30 @@ namespace Wcs.PlcService.Services
 		//  = 2: đã gửi xuống PLC2
 		//  → Write cùng lúc xuống cả 2 PLC
 		//
-		private const string PLC1_MODE_CRANE_SHUTTLE = "DB500.DBW2";
-		private const string PLC2_MODE_CRANE_SHUTTLE = "DB500.DBW2";
+		private const string PLC1_MODE_CRANE_SHUTTLE = Db500Map.modeCraneShuttle;
+		private const string PLC2_MODE_CRANE_SHUTTLE = Db500Map.modeCraneShuttle;
 
 		//
 		// PLC1 LOCATION  (Position_Target – DB500)
 		//
-		private const string PLC1_XIN  = "DB500.DBW4";
-		private const string PLC1_ZIN  = "DB500.DBW6";
-		private const string PLC1_BIN  = "DB500.DBW8";
+		private const string PLC1_XIN  = Db500Map.xin;
+		private const string PLC1_ZIN  = Db500Map.zin;
+		private const string PLC1_BIN  = Db500Map.bin;
 
-		private const string PLC1_XOUT = "DB500.DBW10";
-		private const string PLC1_ZOUT = "DB500.DBW12";
-		private const string PLC1_BOUT = "DB500.DBW14";
+		private const string PLC1_XOUT = Db500Map.xout;
+		private const string PLC1_ZOUT = Db500Map.zout;
+		private const string PLC1_BOUT = Db500Map.bout;
 
 		//
 		// PLC2 LOCATION  (Position_Target – DB500, cùng địa chỉ với PLC1)
 		//
-		private const string PLC2_XIN  = "DB500.DBW4";
-		private const string PLC2_ZIN  = "DB500.DBW6";
-		private const string PLC2_BIN  = "DB500.DBW8";
+		private const string PLC2_XIN  = Db500Map.xin;
+		private const string PLC2_ZIN  = Db500Map.zin;
+		private const string PLC2_BIN  = Db500Map.bin;
 
-		private const string PLC2_XOUT = "DB500.DBW10";
-		private const string PLC2_ZOUT = "DB500.DBW12";
-		private const string PLC2_BOUT = "DB500.DBW14";
+		private const string PLC2_XOUT = Db500Map.xout;
+		private const string PLC2_ZOUT = Db500Map.zout;
+		private const string PLC2_BOUT = Db500Map.bout;
 
 		//
 		// STATE
