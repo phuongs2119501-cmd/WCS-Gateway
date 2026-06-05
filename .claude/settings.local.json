@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "wcs-mcp",
+    "wcs-mcp-local"
+  ]
+}
