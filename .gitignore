@@ -1,0 +1,50 @@
+# ───────────────────────────────────────────────────────────
+# .gitignore — WCS-Gateway (.NET 8)
+# Build output & IDE/local state must NOT be tracked.
+# Source, configs, docs, .agents/.claude tooling ARE tracked.
+# ───────────────────────────────────────────────────────────
+
+# Build output (per-project)
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio / Rider / VS Code local state
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.idea/
+
+# Build/test artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+project.assets.json
+*.nuget.cache
+*.nuget.dgspec.json
+staticwebassets*.json
+*.staticwebassets.endpoints.json
+
+# Local runtime data (e.g. wcs-mcp SQLite DB) — never source
+data/*.db
+data/*.db-shm
+data/*.db-wal
+*.sqlite
+*.sqlite3
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# ── Intentionally KEPT (not ignored) ────────────────────────
+# - WcsSystem/Wcs.PlcService/Config/db500-keys.json   (DB500 catalog, source of truth)
+# - WcsSystem/Wcs.PlcService/Plc/Db500Map.g.cs         (generated but committed catalog output)
+# - tools/Db500MapGen/                                  (generator)
+# - document.md, CLAUDE.md, .agents/, .claude/, .mcp.json
+# Db500Map.g.cs lives under Plc/ (not obj/), so the obj/ rule does NOT hide it.
