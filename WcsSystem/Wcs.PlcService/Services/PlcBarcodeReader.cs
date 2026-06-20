@@ -1,20 +1,8 @@
 using System.Text;
 using Wcs.PlcService.Models;
 using Wcs.PlcService.Plc;
-/* ĐỌC BARCODE TỪ 2 PLC ĐỘC LẬP — DB500
- *
- * ĐỌC BARCODE (14 ký tự):
- *   Char_0  → DB500.DBB32
- *   Char_1  → DB500.DBB33
- *   ...
- *   Char_13 → DB500.DBB45
- *
- * GHI KẾT QUẢ XUỐNG CẢ 2 PLC (song song):
- *   Barcode_OK → DB500.DBX46.0  (Bool)
- *   Barcode_NG → DB500.DBX46.1  (Bool)
- *
- * 2 PLC hoàn toàn độc lập — đọc riêng, ghi riêng
- */
+using Wcs.PlcService.DataMappingPlc;
+
 namespace Wcs.PlcService.Services
 {
     public class PlcBarcodeReader
@@ -22,24 +10,6 @@ namespace Wcs.PlcService.Services
         private readonly Plc1Connector _plc1;
         private readonly Plc2Connector _plc2;
         private readonly SystemState   _state;
-
-        //
-        // BARCODE — 14 ký tự, DB500 offset 32.0 → 45.0
-        //
-        private const int    DB_NUMBER      = 500;
-        private const int    CHAR_START     = 32;   // DBB32 = Char_0
-        private const int    CHAR_COUNT     = 14;   // Char_0 .. Char_13
-
-        //
-        // BARCODE RESULT FLAGS (DB500)
-        //
-        private const string BARCODE_OK = "DB500.DBX46.0";  // Biến barcode hợp lệ
-        private const string BARCODE_NG = "DB500.DBX46.1";  // Biến barcode không hợp lệ
-
-        //
-        // GATE READING (DB500.DBW70)
-        //
-        private const string GATE_ADDRESS = "DB500.DBW70";
 
         public PlcBarcodeReader(Plc1Connector plc1, Plc2Connector plc2, SystemState state)
         {
@@ -57,37 +27,41 @@ namespace Wcs.PlcService.Services
         //
         public void ReadAll()
         {
-            var b1 = ReadBarcodeFrom(_plc1);
-            var b2 = ReadBarcodeFrom(_plc2);
+            var b1 = _state.DataPlc1.ReadBarcode(_plc1);
+            var b2 = _state.DataPlc2.ReadBarcode(_plc2);
 
-            // Đọc thêm mã Gate hiện tại
-            _plc1.TryRead<ushort>(GATE_ADDRESS, out ushort gate1);
-            _plc2.TryRead<ushort>(GATE_ADDRESS, out ushort gate2);
+            // Đọc thêm mã Gate hiện tại (Import & Export)
+            _plc1.TryRead<ushort>(DataPlc1.GATE_IMPORT, out ushort gateImport1);
+            _plc1.TryRead<ushort>(DataPlc1.GATE_EXPORT, out ushort gateExport1);
+            _plc2.TryRead<ushort>(DataPlc2.GATE_IMPORT, out ushort gateImport2);
+            _plc2.TryRead<ushort>(DataPlc2.GATE_EXPORT, out ushort gateExport2);
 
             // Chỉ log khi barcode thay đổi
-            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\" (Gate {gate1})"); _lastBarcode1 = b1; }
-            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\" (Gate {gate2})"); _lastBarcode2 = b2; }
+            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\" (Gate Import {gateImport1}, Export {gateExport1})"); _lastBarcode1 = b1; }
+            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\" (Gate Import {gateImport2}, Export {gateExport2})"); _lastBarcode2 = b2; }
 
-            _state.Barcode1 = b1;
-            _state.Gate1 = gate1;
+            _state.DataPlc1.Barcode = b1;
+            _state.DataPlc1.GateImport = gateImport1;
+            _state.DataPlc1.GateExport = gateExport1;
 
-            _state.Barcode2 = b2;
-            _state.Gate2 = gate2;
+            _state.DataPlc2.Barcode = b2;
+            _state.DataPlc2.GateImport = gateImport2;
+            _state.DataPlc2.GateExport = gateExport2;
 
             // Đọc trạng thái OK, NG từ PLC 1
-            if (_plc1.TryRead<bool>(BARCODE_OK, out bool ok1) &&
-                _plc1.TryRead<bool>(BARCODE_NG, out bool ng1))
+            if (_plc1.TryRead<bool>(DataPlc1.BARCODE_OK, out bool ok1) &&
+                _plc1.TryRead<bool>(DataPlc1.BARCODE_NG, out bool ng1))
             {
-                _state.BarcodeOk1 = ok1;
-                _state.BarcodeNg1 = ng1;
+                _state.DataPlc1.BarcodeOk = ok1;
+                _state.DataPlc1.BarcodeNg = ng1;
             }
 
             // Đọc trạng thái OK, NG từ PLC 2
-            if (_plc2.TryRead<bool>(BARCODE_OK, out bool ok2) &&
-                _plc2.TryRead<bool>(BARCODE_NG, out bool ng2))
+            if (_plc2.TryRead<bool>(DataPlc2.BARCODE_OK, out bool ok2) &&
+                _plc2.TryRead<bool>(DataPlc2.BARCODE_NG, out bool ng2))
             {
-                _state.BarcodeOk2 = ok2;
-                _state.BarcodeNg2 = ng2;
+                _state.DataPlc2.BarcodeOk = ok2;
+                _state.DataPlc2.BarcodeNg = ng2;
             }
         }
 
@@ -96,8 +70,8 @@ namespace Wcs.PlcService.Services
         //
         public void WriteBarcodeOk(bool value)
         {
-            _plc1.TryWriteBool(BARCODE_OK, value);
-            _plc2.TryWriteBool(BARCODE_OK, value);
+            _plc1.TryWriteBool(DataPlc1.BARCODE_OK, value);
+            _plc2.TryWriteBool(DataPlc2.BARCODE_OK, value);
             Console.WriteLine($"[BarcodeReader] Write Barcode_OK={value} → PLC1 & PLC2");
         }
 
@@ -106,25 +80,9 @@ namespace Wcs.PlcService.Services
         //
         public void WriteBarcodeNg(bool value)
         {
-            _plc1.TryWriteBool(BARCODE_NG, value);
-            _plc2.TryWriteBool(BARCODE_NG, value);
+            _plc1.TryWriteBool(DataPlc1.BARCODE_NG, value);
+            _plc2.TryWriteBool(DataPlc2.BARCODE_NG, value);
             Console.WriteLine($"[BarcodeReader] Write Barcode_NG={value} → PLC1 & PLC2");
-        }
-
-        //
-        // ĐỌC BARCODE TỪ 1 PLC — 14 ký tự liên tiếp từ DB500.DBB32
-        //
-        private string ReadBarcodeFrom(S7Connector connector)
-        {
-            var buffer = new char[CHAR_COUNT];
-
-            for (int i = 0; i < CHAR_COUNT; i++)
-            {
-                string address = $"DB{DB_NUMBER}.DBB{CHAR_START + i}";
-                buffer[i] = connector.TryReadChar(address, out char c) ? c : ' ';
-            }
-
-            return new string(buffer).Trim();
         }
     }
 }

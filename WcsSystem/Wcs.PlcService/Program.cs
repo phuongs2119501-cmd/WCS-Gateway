@@ -1,6 +1,7 @@
 using Wcs.PlcService.Models;
 using Wcs.PlcService.Plc;
 using Wcs.PlcService.Services;
+using Wcs.PlcService.ConnectingWcs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,11 +61,10 @@ builder.Services.AddSingleton<SystemState>();
 //
 // 4️⃣ PLC SERVICES
 builder.Services.AddSingleton<PlcBarcodeReader>();
-builder.Services.AddSingleton<LocationRouter>();
 builder.Services.AddSingleton<CraneService>();
 builder.Services.AddSingleton<ShuttleService>();
 builder.Services.AddSingleton<SystemService>();
-builder.Services.AddSingleton<TcpClientService>();
+
 
 
 //

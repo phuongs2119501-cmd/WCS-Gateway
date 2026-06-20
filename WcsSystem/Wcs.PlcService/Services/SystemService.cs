@@ -1,5 +1,6 @@
 using Wcs.PlcService.Plc;
 using Wcs.PlcService.Models;
+using Wcs.PlcService.DataMappingPlc;
 
 /* ĐỌC TRẠNG THÁI HỆ THỐNG TỪ 2 PLC — ĐỘC LẬP, SONG SONG
  *
@@ -21,13 +22,6 @@ namespace Wcs.PlcService.Services
         private readonly Plc1Connector _plc1;
         private readonly Plc2Connector _plc2;
         private readonly SystemState   _state;
-
-        // ── Địa chỉ DB500 ───────────────────────────────────
-        private const string AUTO_MODE  = "DB500.DBX50.0";
-        private const string RUNNING    = "DB500.DBX50.1";
-        private const string STOP       = "DB500.DBX50.2";
-        private const string ERROR      = "DB500.DBX50.3";
-        private const string ERROR_CODE = "DB500.DBW52";
 
         // ── Track thay đổi — chỉ log khi khác lần trước ────
         private bool   _p1Auto, _p1Running, _p1Stop, _p1Error;
@@ -53,66 +47,92 @@ namespace Wcs.PlcService.Services
         // ── ĐỌC TỪ PLC1 ─────────────────────────────────────
         private void ReadFromPlc1()
         {
-            if (_plc1.TryRead<bool>(AUTO_MODE, out bool auto)   &&
-                _plc1.TryRead<bool>(RUNNING,   out bool run)    &&
-                _plc1.TryRead<bool>(STOP,      out bool stop)   &&
-                _plc1.TryRead<bool>(ERROR,     out bool err))
+            if (_plc1.TryRead<bool>(DataPlc1.AUTO_MODE, out bool auto)   &&
+                _plc1.TryRead<bool>(DataPlc1.RUNNING,   out bool run)    &&
+                _plc1.TryRead<bool>(DataPlc1.STOP,      out bool stop)   &&
+                _plc1.TryRead<bool>(DataPlc1.ERROR,     out bool err))
             {
-                _state.System1.Auto    = auto;
-                _state.System1.Running = run;
-                _state.System1.Stop    = stop;
-                _state.System1.Error   = err;
+                _state.DataPlc1.System.Auto    = auto;
+                _state.DataPlc1.System.Running = run;
+                _state.DataPlc1.System.Stop    = stop;
+                _state.DataPlc1.System.Error   = err;
 
                 if (!_init1 || auto != _p1Auto || run != _p1Running ||
-                    stop != _p1Stop || err != _p1Error)
+                     stop != _p1Stop || err != _p1Error)
                 {
-                    // Đã tắt log SYS PLC1
                     _p1Auto = auto; _p1Running = run; _p1Stop = stop; _p1Error = err;
                     _init1 = true;
                 }
             }
 
-            if (_plc1.TryRead<ushort>(ERROR_CODE, out ushort code1))
+            if (_plc1.TryRead<ushort>(DataPlc1.ERROR_CODE, out ushort code1))
             {
-                _state.System1.ErrorCode = code1;
+                _state.DataPlc1.System.ErrorCode = code1;
                 if (code1 != _p1Code)
                 {
-                    // if (code1 != 0) Console.WriteLine($"[SYS PLC1] ErrorCode={code1}");
                     _p1Code = code1;
                 }
+            }
+
+            if (_plc1.TryRead<bool>(DataPlc1.PLC1_DONE, out bool done1))
+            {
+                _state.DataPlc1.Done = done1;
+            }
+
+            if (_plc1.TryRead<bool>(DataPlc1.PLC1_FAIL, out bool fail1))
+            {
+                _state.DataPlc1.Fail = fail1;
+            }
+
+            if (_plc1.TryRead<ushort>(DataPlc1.DIRECTION_BLOCK2, out ushort dir1))
+            {
+                _state.DataPlc1.DirectionBlock2 = dir1;
             }
         }
 
         // ── ĐỌC TỪ PLC2 ─────────────────────────────────────
         private void ReadFromPlc2()
         {
-            if (_plc2.TryRead<bool>(AUTO_MODE, out bool auto)   &&
-                _plc2.TryRead<bool>(RUNNING,   out bool run)    &&
-                _plc2.TryRead<bool>(STOP,      out bool stop)   &&
-                _plc2.TryRead<bool>(ERROR,     out bool err))
+            if (_plc2.TryRead<bool>(DataPlc2.AUTO_MODE, out bool auto)   &&
+                _plc2.TryRead<bool>(DataPlc2.RUNNING,   out bool run)    &&
+                _plc2.TryRead<bool>(DataPlc2.STOP,      out bool stop)   &&
+                _plc2.TryRead<bool>(DataPlc2.ERROR,     out bool err))
             {
-                _state.System2.Auto    = auto;
-                _state.System2.Running = run;
-                _state.System2.Stop    = stop;
-                _state.System2.Error   = err;
+                _state.DataPlc2.System.Auto    = auto;
+                _state.DataPlc2.System.Running = run;
+                _state.DataPlc2.System.Stop    = stop;
+                _state.DataPlc2.System.Error   = err;
 
                 if (!_init2 || auto != _p2Auto || run != _p2Running ||
                     stop != _p2Stop || err != _p2Error)
                 {
-                    // Đã tắt log SYS PLC2
                     _p2Auto = auto; _p2Running = run; _p2Stop = stop; _p2Error = err;
                     _init2 = true;
                 }
             }
 
-            if (_plc2.TryRead<ushort>(ERROR_CODE, out ushort code2))
+            if (_plc2.TryRead<ushort>(DataPlc2.ERROR_CODE, out ushort code2))
             {
-                _state.System2.ErrorCode = code2;
+                _state.DataPlc2.System.ErrorCode = code2;
                 if (code2 != _p2Code)
                 {
-                    // if (code2 != 0) Console.WriteLine($"[SYS PLC2] ErrorCode={code2}");
                     _p2Code = code2;
                 }
+            }
+
+            if (_plc2.TryRead<bool>(DataPlc2.PLC2_DONE, out bool done2))
+            {
+                _state.DataPlc2.Done = done2;
+            }
+
+            if (_plc2.TryRead<bool>(DataPlc2.PLC2_FAIL, out bool fail2))
+            {
+                _state.DataPlc2.Fail = fail2;
+            }
+
+            if (_plc2.TryRead<ushort>(DataPlc2.DIRECTION_BLOCK2, out ushort dir2))
+            {
+                _state.DataPlc2.DirectionBlock2 = dir2;
             }
         }
     }

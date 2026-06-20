@@ -11,6 +11,7 @@ public class S7Connector
 
     // State tự quản lý — không phụ thuộc vào _plc.IsConnected làm nguồn truth
     private volatile bool _isConnected = false;
+    private volatile bool _isConnecting = false;
 
     private DateTime _lastReconnectAttempt = DateTime.MinValue;
     private readonly TimeSpan _reconnectDelay = TimeSpan.FromSeconds(5);
@@ -39,12 +40,12 @@ public class S7Connector
 
     private void EnsureConnected()
     {
-        if (_isConnected)
+        if (_isConnected || _isConnecting)
             return;
 
         lock (_lock)
         {
-            if (_isConnected)
+            if (_isConnected || _isConnecting)
                 return;
 
             // Throttle reconnect
@@ -52,24 +53,31 @@ public class S7Connector
                 return;
 
             _lastReconnectAttempt = DateTime.Now;
+            _isConnecting = true;
 
-            Console.WriteLine($"[{_tag}] 🔄 Attempting connect → {_plc.IP}:{_plc.Port}");
-
-            try
+            Task.Run(() =>
             {
-                // Đảm bảo đóng session cũ trước khi mở mới
-                try { _plc.Close(); } catch { }
-
-                _plc.Open();
-
-                _isConnected = true;
-                Console.WriteLine($"[{_tag}] ✅ CONNECTED successfully");
-            }
-            catch (Exception ex)
-            {
-                _isConnected = false;
-                Console.WriteLine($"[{_tag}] ❌ Connect FAILED: {ex.GetType().Name}: {ex.Message}");
-            }
+                Console.WriteLine($"[{_tag}] 🔄 Attempting connect in background → {_plc.IP}:{_plc.Port}");
+                try
+                {
+                    lock (_lock)
+                    {
+                        try { _plc.Close(); } catch { }
+                        _plc.Open();
+                    }
+                    _isConnected = true;
+                    Console.WriteLine($"[{_tag}] ✅ CONNECTED successfully");
+                }
+                catch (Exception ex)
+                {
+                    _isConnected = false;
+                    Console.WriteLine($"[{_tag}] ❌ Connect FAILED in background: {ex.GetType().Name}: {ex.Message}");
+                }
+                finally
+                {
+                    _isConnecting = false;
+                }
+            });
         }
     }
 
@@ -79,7 +87,13 @@ public class S7Connector
         {
             _isConnected = false;
             Console.WriteLine($"[{_tag}] ⚠️ DISCONNECTED");
-            try { _plc.Close(); } catch { }
+            Task.Run(() =>
+            {
+                lock (_lock)
+                {
+                    try { _plc.Close(); } catch { }
+                }
+            });
         }
     }
 

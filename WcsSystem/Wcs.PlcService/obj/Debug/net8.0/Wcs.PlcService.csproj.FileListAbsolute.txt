@@ -27,3 +27,4 @@ C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\scopedcss\bundle\Wcs.PlcService.styles.css
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.sourcelink.json
+C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.staticwebassets.runtime.json

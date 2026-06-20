@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\wwwroot\\images\\logo_tin_quang.png",
+      "PackagePath": "staticwebassets\\images\\logo_tin_quang.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Wcs.PlcService.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Wcs.PlcService.props",
+      "PackagePath": "build\\Wcs.PlcService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Wcs.PlcService.props",
+      "PackagePath": "buildMultiTargeting\\Wcs.PlcService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Wcs.PlcService.props",
+      "PackagePath": "buildTransitive\\Wcs.PlcService.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

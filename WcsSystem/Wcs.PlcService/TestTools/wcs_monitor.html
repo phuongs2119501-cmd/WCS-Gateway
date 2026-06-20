@@ -48,7 +48,6 @@
       font-weight: 800;
       background: linear-gradient(90deg, #0284c7, #4f46e5);
       -webkit-background-clip: text;
-      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
       letter-spacing: 1.5px;
@@ -56,6 +55,7 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
+      text-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
     }
 
     #status-bar {
@@ -372,38 +372,44 @@
 
   <!-- Tabs Navigation -->
   <div class="tabs-container">
-    <button class="tab-btn active" onclick="switchTab('tab-plc1', this)">Trạm Main 1</button>
-    <button class="tab-btn" onclick="switchTab('tab-plc2', this)">Trạm Main 2</button>
-    <button class="tab-btn" onclick="switchTab('tab-crane', this)">Crane</button>
-    <button class="tab-btn" onclick="switchTab('tab-shuttle', this)">Shuttle</button>
+    <button class="tab-btn active" onclick="switchTab('tab-monitor', this)">🖥️ Giám Sát Hệ Thống</button>
+    <button class="tab-btn" onclick="switchTab('tab-external', this)">🌐 Trang Web Nhúng</button>
   </div>
 
-  <!-- Tab 1: Trạm Main 1 (PLC 1) -->
-  <div id="tab-plc1" class="tab-content active">
+  <!-- Tab 1: Monitor Content -->
+  <div id="tab-monitor" class="tab-content active">
 
-    <!-- PLC 1 Connection Status -->
+    <!-- PLC Connection -->
     <div class="plc-row">
       <div class="plc-chip">
         <div class="dot off" id="dot1"></div>
-        <span>Trạm Main 1 — PLC 1:</span>
+        <span>PLC 1:</span>
         <span id="plc1-text" style="color:#ef4444">Offline</span>
+      </div>
+      <div class="plc-chip">
+        <div class="dot off" id="dot2"></div>
+        <span>PLC 2:</span>
+        <span id="plc2-text" style="color:#ef4444">Offline</span>
       </div>
     </div>
 
+    <!-- Data grid -->
     <div class="grid">
 
-      <!-- Barcode PLC 1 -->
+      <!-- Barcode Reading -->
       <div class="card">
-        <div class="card-title">Barcode & Phân Làn</div>
+        <div class="card-title">📦 Barcode & Phân Làn</div>
+
+        <!-- PLC 1 Barcode -->
         <div class="row">
-          <span class="label">Mã Barcode</span>
+          <span class="label">Mã PLC 1</span>
           <div>
             <span class="value" id="bc1" style="color:#0284c7;">--</span>
             <span id="bc1-status" style="margin-left: 8px;"></span>
           </div>
         </div>
         <div class="row">
-          <span class="label">Cổng (In / Out)</span>
+          <span class="label">Cổng PLC 1 (In/Out)</span>
           <div>
             <span class="badge" id="gateImport1" style="background:#e0f2fe; color:#0369a1; border: 1px solid #bae6fd;"
               title="Import Gate">I: --</span>
@@ -411,19 +417,72 @@
               title="Export Gate">E: --</span>
           </div>
         </div>
+
+        <!-- PLC 2 Barcode -->
+        <div class="row" style="margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+          <span class="label">Mã PLC 2</span>
+          <div>
+            <span class="value" id="bc2" style="color:#7c3aed;">--</span>
+            <span id="bc2-status" style="margin-left: 8px;"></span>
+          </div>
+        </div>
         <div class="row">
-          <span class="label">Phân Làn (Direction Block 2)</span>
-          <span class="badge ok" style="font-family:monospace;" id="disp-Dir1">--</span>
+          <span class="label">Cổng PLC 2 (In/Out)</span>
+          <div>
+            <span class="badge" id="gateImport2" style="background:#f3e8ff; color:#6b21a8; border: 1px solid #e9d5ff;"
+              title="Import Gate">I: --</span>
+            <span class="badge" id="gateExport2" style="background:#e0e7ff; color:#4338ca; border: 1px solid #c7d2fe;"
+              title="Export Gate">E: --</span>
+          </div>
         </div>
       </div>
 
-      <!-- Mục tiêu & Trạng thái lệnh (PLC 1) -->
+      <!-- Crane 1 (PLC 1) -->
+      <div class="card">
+        <div class="card-title">🏗️ Crane 1 (PLC 1)</div>
+        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="c1x">--</span></div>
+        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="c1z">--</span></div>
+        <div class="row"><span class="label">Trạng thái</span><span id="c1s">--</span></div>
+        <div class="row"><span class="label">Mã báo lỗi</span><span class="value" id="c1e">--</span></div>
+      </div>
+
+      <!-- Crane 2 (PLC 1) -->
+      <div class="card">
+        <div class="card-title">🏗️ Crane 2 (PLC 1)</div>
+        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="c2x">--</span></div>
+        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="c2z">--</span></div>
+        <div class="row"><span class="label">Trạng thái</span><span id="c2s">--</span></div>
+        <div class="row"><span class="label">Mã báo lỗi</span><span class="value" id="c2e">--</span></div>
+      </div>
+
+      <!-- Shuttle 1 (PLC 1) -->
+      <div class="card">
+        <div class="card-title">🚌 Shuttle 1 (PLC 1)</div>
+        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="s1x">--</span></div>
+        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="s1z">--</span></div>
+        <div class="row"><span class="label">Tọa độ B</span><span class="value" id="s1b">--</span></div>
+        <div class="row"><span class="label">Trạng thái</span><span id="s1s">--</span></div>
+        <div class="row"><span class="label">Mức Pin</span><span class="value" id="s1p">--</span></div>
+      </div>
+
+      <!-- Shuttle 2 (PLC 1) -->
+      <div class="card">
+        <div class="card-title">🚗 Shuttle 2 (PLC 1)</div>
+        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="s2x">--</span></div>
+        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="s2z">--</span></div>
+        <div class="row"><span class="label">Tọa độ B</span><span class="value" id="s2b">--</span></div>
+        <div class="row"><span class="label">Trạng thái</span><span id="s2s">--</span></div>
+        <div class="row"><span class="label">Mức Pin</span><span class="value" id="s2p">--</span></div>
+      </div>
+
+      <!-- Location Target & Results (PLC 1) -->
       <div class="card location-input-card">
-        <div class="card-title">Mục Tiêu & Trạng Thái Lệnh</div>
+        <div class="card-title">📤 Mục Tiêu & Trạng Thái Lệnh (PLC 1)</div>
         <div class="row">
           <span class="label">Loại Lệnh (Command Type)</span>
           <span class="value" id="disp-CommandType" style="color:#059669; font-weight:bold;">--</span>
         </div>
+
         <div class="loc-table" style="margin-top: 15px;">
           <div class="loc-row loc-header">
             <span></span><span>Trục X</span><span>Trục Z</span><span>Trục B</span>
@@ -441,22 +500,41 @@
             <span class="value" id="disp-Bout">--</span>
           </div>
         </div>
+
         <div class="row" style="margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
           <span class="label">Chế độ Crane/Shuttle</span>
           <span class="value" id="disp-ModeCraneShuttle" style="color:#0284c7">--</span>
         </div>
+
+        <!-- Done/Fail Results & DirectionBlock2 -->
         <div class="row">
-          <span class="label">Kết quả lệnh</span>
+          <span class="label">Kết quả lệnh PLC 1</span>
           <div>
             <span id="disp-Done1">--</span>
             <span id="disp-Fail1">--</span>
           </div>
         </div>
+        <div class="row">
+          <span class="label">Kết quả lệnh PLC 2</span>
+          <div>
+            <span id="disp-Done2">--</span>
+            <span id="disp-Fail2">--</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="label">Phân làn (Direction Block 2)</span>
+          <div>
+            <span class="badge ok" style="font-family:monospace;" id="disp-Dir1">PLC1: --</span>
+            <span class="badge ok"
+              style="font-family:monospace; margin-left: 8px; background:#f3e8ff; color:#6b21a8; border:1px solid #e9d5ff;"
+              id="disp-Dir2">PLC2: --</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Hệ thống PLC 1 -->
+      <!-- System State PLC 1 -->
       <div class="card">
-        <div class="card-title">Hệ Thống</div>
+        <div class="card-title">⚙️ Hệ Thống - PLC 1</div>
         <div class="row"><span class="label">Chế Độ Chạy</span><span id="sy1-mode">--</span></div>
         <div class="row"><span class="label">Hệ Thống Đang Chạy</span><span id="sy1-run">--</span></div>
         <div class="row"><span class="label">Dừng Khẩn Cấp (Stop)</span><span id="sy1-stop">--</span></div>
@@ -464,54 +542,9 @@
         <div class="row"><span class="label">Mã Lỗi Hệ Thống</span><span class="value" id="sy1-code">--</span></div>
       </div>
 
-    </div>
-    <p id="last-update">--</p>
-  </div>
-
-  <!-- Tab 2: Trạm Main 2 (PLC 2) -->
-  <div id="tab-plc2" class="tab-content">
-
-    <!-- PLC 2 Connection Status -->
-    <div class="plc-row">
-      <div class="plc-chip">
-        <div class="dot off" id="dot2"></div>
-        <span>Trạm Main 2 — PLC 2:</span>
-        <span id="plc2-text" style="color:#ef4444">Offline</span>
-      </div>
-    </div>
-
-    <div class="grid">
-
-      <!-- Barcode PLC 2 -->
+      <!-- System State PLC 2 -->
       <div class="card">
-        <div class="card-title">Barcode & Phân Làn</div>
-        <div class="row">
-          <span class="label">Mã Barcode</span>
-          <div>
-            <span class="value" id="bc2" style="color:#7c3aed;">--</span>
-            <span id="bc2-status" style="margin-left: 8px;"></span>
-          </div>
-        </div>
-        <div class="row">
-          <span class="label">Cổng (In / Out)</span>
-          <div>
-            <span class="badge" id="gateImport2" style="background:#f3e8ff; color:#6b21a8; border: 1px solid #e9d5ff;"
-              title="Import Gate">I: --</span>
-            <span class="badge" id="gateExport2" style="background:#e0e7ff; color:#4338ca; border: 1px solid #c7d2fe;"
-              title="Export Gate">E: --</span>
-          </div>
-        </div>
-        <div class="row">
-          <span class="label">Phân Làn (Direction Block 2)</span>
-          <span class="badge ok"
-            style="font-family:monospace; background:#f3e8ff; color:#6b21a8; border:1px solid #e9d5ff;"
-            id="disp-Dir2">--</span>
-        </div>
-      </div>
-
-      <!-- Hệ thống PLC 2 -->
-      <div class="card">
-        <div class="card-title">Hệ Thống</div>
+        <div class="card-title">⚙️ Hệ Thống - PLC 2</div>
         <div class="row"><span class="label">Chế Độ Chạy</span><span id="sy2-mode">--</span></div>
         <div class="row"><span class="label">Hệ Thống Đang Chạy</span><span id="sy2-run">--</span></div>
         <div class="row"><span class="label">Dừng Khẩn Cấp (Stop)</span><span id="sy2-stop">--</span></div>
@@ -519,80 +552,24 @@
         <div class="row"><span class="label">Mã Lỗi Hệ Thống</span><span class="value" id="sy2-code">--</span></div>
       </div>
 
-      <!-- Kết quả lệnh PLC 2 -->
-      <div class="card">
-        <div class="card-title">Kết Quả Lệnh</div>
-        <div class="row">
-          <span class="label">Kết quả lệnh</span>
-          <div>
-            <span id="disp-Done2">--</span>
-            <span id="disp-Fail2">--</span>
-          </div>
-        </div>
-      </div>
-
     </div>
+
+    <p id="last-update">--</p>
   </div>
 
-  <!-- Tab: Crane -->
-  <div id="tab-crane" class="tab-content">
-    <div class="grid">
-      <!-- Crane 1 -->
-      <div class="card">
-        <div class="card-title">Crane 1</div>
-        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="c1x">--</span></div>
-        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="c1z">--</span></div>
-        <div class="row"><span class="label">Trạng thái</span><span id="c1s">--</span></div>
-        <div class="row"><span class="label">Mã báo lỗi</span><span class="value" id="c1e">--</span></div>
-      </div>
-
-      <!-- Crane 2 -->
-      <div class="card">
-        <div class="card-title">Crane 2</div>
-        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="c2x">--</span></div>
-        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="c2z">--</span></div>
-        <div class="row"><span class="label">Trạng thái</span><span id="c2s">--</span></div>
-        <div class="row"><span class="label">Mã báo lỗi</span><span class="value" id="c2e">--</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tab: Shuttle -->
-  <div id="tab-shuttle" class="tab-content">
-    <div class="grid">
-      <!-- Shuttle 1 -->
-      <div class="card">
-        <div class="card-title">Shuttle 1</div>
-        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="s1x">--</span></div>
-        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="s1z">--</span></div>
-        <div class="row"><span class="label">Tọa độ B</span><span class="value" id="s1b">--</span></div>
-        <div class="row"><span class="label">Trạng thái</span><span id="s1s">--</span></div>
-        <div class="row"><span class="label">Mức Pin</span><span class="value" id="s1p">--</span></div>
-      </div>
-
-      <!-- Shuttle 2 -->
-      <div class="card">
-        <div class="card-title">Shuttle 2</div>
-        <div class="row"><span class="label">Tọa độ X</span><span class="value" id="s2x">--</span></div>
-        <div class="row"><span class="label">Tọa độ Z</span><span class="value" id="s2z">--</span></div>
-        <div class="row"><span class="label">Tọa độ B</span><span class="value" id="s2b">--</span></div>
-        <div class="row"><span class="label">Trạng thái</span><span id="s2s">--</span></div>
-        <div class="row"><span class="label">Mức Pin</span><span class="value" id="s2p">--</span></div>
-      </div>
-    </div>
-
-    <!-- Giao Diện Điều Khiển Shuttle Wifi 1 -->
-    <div class="external-card" style="margin-top: 30px; max-width: 100%;">
-      <div class="external-icon">🚗</div>
-      <h2 style="font-family:'Montserrat'; color:#0284c7; font-size:1.5rem; margin-bottom:15px; font-weight:700;">
-        Shuttle Wifi 1 — Giao Diện Điều Khiển</h2>
+  <!-- Tab 2: External Web Content -->
+  <div id="tab-external" class="tab-content">
+    <div class="external-card">
+      <div class="external-icon">🌐</div>
+      <h2 style="font-family:'Montserrat'; color:#0284c7; font-size:1.5rem; margin-bottom:15px; font-weight:700;">Giao
+        Diện Điều Khiển Siemens (ViewOfThings)</h2>
       <p style="color:#64748b; font-size:0.95rem; line-height:1.6; margin-bottom:30px;">
-        Do cơ chế bảo mật của thiết bị (chính sách bảo mật <code>X-Frame-Options</code>), trình duyệt không cho phép
-        nhúng trực tiếp giao diện này qua thẻ iframe. Vui lòng nhấn nút dưới đây để mở giao diện Shuttle Wifi 1 trong
-        một tab mới.
+        Do cơ chế bảo mật của thiết bị PLC Siemens (chính sách bảo mật <code>X-Frame-Options</code>), trình duyệt không
+        cho phép nhúng trực tiếp giao diện này qua thẻ iframe. Vui lòng nhấn nút dưới đây để mở trang điều khiển PLC
+        trong một tab mới an toàn và ổn định.
       </p>
-      <a href="https://192.168.39.30/~ViewOfThings/index.html" target="_blank" class="btn btn-blue">
-        🚗 Mở Giao Diện Shuttle Wifi 1
+      <a href="http://192.168.39.30/~ViewOfThings/index.html" target="_blank" class="btn btn-blue">
+        🚀 Mở Giao Diện Điều Khiển PLC Siemens
       </a>
     </div>
   </div>
