@@ -3,10 +3,6 @@
     "wcs-mcp": {
       "command": "docker",
       "args": ["exec", "-i", "-e", "WCS_MCP_STDIO_ONLY=1", "wcs-mcp", "node", "//app/dist/index.js"]
-    },
-    "wcs-mcp-local": {
-      "command": "node",
-      "args": ["D:/Sources/WCS-MCP/server/dist/index.js"]
     }
   }
 }
