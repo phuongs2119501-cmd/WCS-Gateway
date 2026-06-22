@@ -67,8 +67,8 @@ public class Worker : BackgroundService
                 _state.Plc2Connected = _plc2.IsConnected;
 
                 // Ghi bit báo WCS (PC) sống / kết nối thành công xuống PLC liên tục để làm Heartbeat
-                if (_plc1.IsConnected) _plc1.TryWriteBool("DB500.DBX74.0", true);
-                if (_plc2.IsConnected) _plc2.TryWriteBool("DB500.DBX74.0", true);
+                if (_plc1.IsConnected) _plc1.TryWriteBool(Db500Map.wcsHeartbeat, true);
+                if (_plc2.IsConnected) _plc2.TryWriteBool(Db500Map.wcsHeartbeat, true);
 
                 //
                 // 1️⃣ System update

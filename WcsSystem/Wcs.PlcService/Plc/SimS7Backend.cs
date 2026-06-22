@@ -5,10 +5,15 @@ using Wcs.PlcService.Plc.Sim;
 
 namespace Wcs.PlcService.Plc;
 
+/// <summary>
+/// Fake DB500 backend. Every offset is derived from <see cref="Db500Map"/> (the generated,
+/// hardware-verified map) — there are NO literal byte offsets in this class, so the simulator
+/// can never drift from the real PLC layout. See SPEC-GW-006.
+/// </summary>
 public sealed class SimS7Backend : IS7Backend
 {
     private const int DbNumber = 500;
-    private const int DbLength = 128;
+    private const int DbLength = 128; // >= minLengthBytes (86); covers DBW84 + headroom
     private static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(50);
 
     private readonly byte[] _db = new byte[DbLength];
@@ -16,6 +21,12 @@ public sealed class SimS7Backend : IS7Backend
     private bool _isOpen;
     private DateTime _lastTick = DateTime.UtcNow;
     private JobState? _job;
+
+    // --- Offsets resolved once from the canonical map (no literals below) ---
+    private static readonly int CmdByte    = Off(Db500Map.reqImportPallet).Byte;   // command region byte
+    private static readonly int CmdBit0    = Off(Db500Map.reqImportPallet).Bit;     // import
+    private static readonly int CmdBit2    = Off(Db500Map.reqTransferPallet).Bit;   // transfer (top of cmd range)
+    private static readonly (int Byte, int Bit) Heartbeat = Off(Db500Map.wcsHeartbeat);
 
     public SimS7Backend(PlcSimFixture fixture, int ticksPerMove)
     {
@@ -115,59 +126,72 @@ public sealed class SimS7Backend : IS7Backend
         _db[parsed.ByteOffset] = value;
     }
 
+    // ------------------------------------------------------------------
+    // Seed — initial DB500 image from the fixture, addressed via Db500Map
+    // ------------------------------------------------------------------
     private void Seed(PlcSimFixture fixture)
     {
-        SetBit(16, 0, fixture.CraneFree);
-        SetBit(16, 1, fixture.CraneBusy);
-        SetBit(16, 2, fixture.CraneError);
-        SetWord(18, fixture.CraneErrorCode);
+        // Crane slot (read as crane1 on PLC1, crane2 on PLC2)
+        SetBitAddr(Db500Map.craneFree, fixture.CraneFree);
+        SetBitAddr(Db500Map.craneBusy, fixture.CraneBusy);
+        SetBitAddr(Db500Map.craneError, fixture.CraneError);
+        SetWordAddr(Db500Map.craneErrorCode, fixture.CraneErrorCode);
 
-        SetBit(20, 0, fixture.Shuttle1Free);
-        SetBit(20, 1, fixture.Shuttle1Busy);
-        SetBit(20, 2, fixture.Shuttle1Error);
-        SetWord(22, fixture.Shuttle1ErrorCode);
-        SetWord(24, fixture.Shuttle1Battery);
+        // Crane-2 slot — idle default (real binding deferred; not moved by the sim)
+        SetBitAddr(Db500Map.crane2Free, true);
 
-        SetBit(26, 0, fixture.Shuttle2Free);
-        SetBit(26, 1, fixture.Shuttle2Busy);
-        SetBit(26, 2, fixture.Shuttle2Error);
-        SetWord(28, fixture.Shuttle2ErrorCode);
-        SetWord(30, fixture.Shuttle2Battery);
+        // Shuttle-1 slot
+        SetBitAddr(Db500Map.shuttle1Free, fixture.Shuttle1Free);
+        SetBitAddr(Db500Map.shuttle1Busy, fixture.Shuttle1Busy);
+        SetBitAddr(Db500Map.shuttle1Error, fixture.Shuttle1Error);
+        SetWordAddr(Db500Map.shuttle1ErrorCode, fixture.Shuttle1ErrorCode);
+        SetWordAddr(Db500Map.shuttle1Battery, fixture.Shuttle1Battery);
+
+        // Shuttle-2 slot
+        SetBitAddr(Db500Map.shuttle2Free, fixture.Shuttle2Free);
+        SetBitAddr(Db500Map.shuttle2Busy, fixture.Shuttle2Busy);
+        SetBitAddr(Db500Map.shuttle2Error, fixture.Shuttle2Error);
+        SetWordAddr(Db500Map.shuttle2ErrorCode, fixture.Shuttle2ErrorCode);
+        SetWordAddr(Db500Map.shuttle2Battery, fixture.Shuttle2Battery);
 
         SeedBarcode(fixture.Barcode);
-        SetBit(46, 0, fixture.BarcodeOk);
-        SetBit(46, 1, fixture.BarcodeNg);
+        SetBitAddr(Db500Map.barcodeOk, fixture.BarcodeOk);
+        SetBitAddr(Db500Map.barcodeNg, fixture.BarcodeNg);
 
-        SetBit(50, 0, fixture.SysAuto);
-        SetBit(50, 1, fixture.SysRunning);
-        SetBit(50, 2, fixture.SysStop);
-        SetBit(50, 3, fixture.SysError);
-        SetWord(52, fixture.SysErrorCode);
+        SetBitAddr(Db500Map.sysAuto, fixture.SysAuto);
+        SetBitAddr(Db500Map.sysRunning, fixture.SysRunning);
+        SetBitAddr(Db500Map.sysStop, fixture.SysStop);
+        SetBitAddr(Db500Map.sysError, fixture.SysError);
+        SetWordAddr(Db500Map.sysErrorCode, fixture.SysErrorCode);
 
-        SetWord(54, fixture.CraneX);
-        SetWord(56, fixture.CraneZ);
-        SetWord(58, fixture.Shuttle1X);
-        SetWord(60, fixture.Shuttle1Z);
-        SetWord(62, fixture.Shuttle1B);
-        SetWord(64, fixture.Shuttle2X);
-        SetWord(66, fixture.Shuttle2Z);
-        SetWord(68, fixture.Shuttle2B);
-        SetWord(70, fixture.Gate);
+        SetWordAddr(Db500Map.craneX, fixture.CraneX);
+        SetWordAddr(Db500Map.craneZ, fixture.CraneZ);
+        SetWordAddr(Db500Map.shuttle1X, fixture.Shuttle1X);
+        SetWordAddr(Db500Map.shuttle1Z, fixture.Shuttle1Z);
+        SetWordAddr(Db500Map.shuttle1B, fixture.Shuttle1B);
+        SetWordAddr(Db500Map.shuttle2X, fixture.Shuttle2X);
+        SetWordAddr(Db500Map.shuttle2Z, fixture.Shuttle2Z);
+        SetWordAddr(Db500Map.shuttle2B, fixture.Shuttle2B);
+        SetWordAddr(Db500Map.gate, fixture.Gate);
     }
 
     private void SeedBarcode(string value)
     {
-        var bytes = Encoding.ASCII.GetBytes((value ?? string.Empty).PadRight(14).Substring(0, 14));
-        Array.Copy(bytes, 0, _db, 32, bytes.Length);
+        var bytes = Encoding.ASCII.GetBytes((value ?? string.Empty).PadRight(Db500Map.barcodeLength).Substring(0, Db500Map.barcodeLength));
+        Array.Copy(bytes, 0, _db, Db500Map.barcodeByteStart, bytes.Length);
     }
 
+    // ------------------------------------------------------------------
+    // Command/heartbeat write handling
+    // ------------------------------------------------------------------
     private void HandleBitWrite(int byteOffset, int bitOffset, bool oldValue, bool newValue)
     {
-        // DBX74.0 la heartbeat: sim chi nhan gia tri, khong can xu ly them.
-        if (byteOffset == 74 && bitOffset == 0)
+        // Heartbeat (DBX82.0): sim only latches the value, no side effect.
+        if (byteOffset == Heartbeat.Byte && bitOffset == Heartbeat.Bit)
             return;
 
-        if (byteOffset == 0 && bitOffset is >= 0 and <= 2)
+        // Command bits (DBX0.0..0.2 = import/export/transfer)
+        if (byteOffset == CmdByte && bitOffset >= CmdBit0 && bitOffset <= CmdBit2)
         {
             if (!oldValue && newValue)
                 StartJob(bitOffset);
@@ -181,19 +205,26 @@ public sealed class SimS7Backend : IS7Backend
     {
         _job = new JobState(
             commandBit,
-            GetWord(54),
-            GetWord(56),
-            GetWord(10),
-            GetWord(12));
+            // crane
+            GetWordAddr(Db500Map.craneX), GetWordAddr(Db500Map.craneZ),
+            // shuttle-1
+            GetWordAddr(Db500Map.shuttle1X), GetWordAddr(Db500Map.shuttle1Z), GetWordAddr(Db500Map.shuttle1B),
+            // shuttle-2
+            GetWordAddr(Db500Map.shuttle2X), GetWordAddr(Db500Map.shuttle2Z), GetWordAddr(Db500Map.shuttle2B),
+            // targets: dest column/level (xout/zout) + dest row (bout)
+            GetWordAddr(Db500Map.xout), GetWordAddr(Db500Map.zout), GetWordAddr(Db500Map.bout));
 
-        SetBit(16, 0, false);
-        SetBit(16, 1, true);
-        SetBit(48, 0, false);
+        // Crane goes Busy immediately. Shuttle is resolved lazily on first pump tick because
+        // LocationRouter writes the command bit before modeCraneShuttle in the same loop pass.
+        SetBitAddr(Db500Map.craneFree, false);
+        SetBitAddr(Db500Map.craneBusy, true);
+
+        SetBitAddr(Db500Map.plcDone, false);
     }
 
     private void FinishJob()
     {
-        SetBit(48, 0, false);
+        SetBitAddr(Db500Map.plcDone, false);
         _job = null;
     }
 
@@ -222,21 +253,82 @@ public sealed class SimS7Backend : IS7Backend
             return;
 
         _job.ElapsedTicks++;
-        short nextX = StepToward(_job.StartX, _job.TargetX, _job.ElapsedTicks, _ticksPerMove);
-        short nextZ = StepToward(_job.StartZ, _job.TargetZ, _job.ElapsedTicks, _ticksPerMove);
+        int e = _job.ElapsedTicks;
+        int n = _ticksPerMove;
 
-        SetWord(54, nextX);
-        SetWord(56, nextZ);
+        var selected = ResolveSelectedShuttle(_job);
 
-        if (_job.ElapsedTicks >= _ticksPerMove || (nextX == _job.TargetX && nextZ == _job.TargetZ))
+        // Crane: step X/Z toward dest column/level
+        SetWordAddr(Db500Map.craneX, StepToward(_job.CraneStartX, _job.TargetX, e, n));
+        SetWordAddr(Db500Map.craneZ, StepToward(_job.CraneStartZ, _job.TargetZ, e, n));
+
+        // Selected shuttle only: step X/Z toward dest, B toward dest row
+        if (selected == ShuttleSlot.Shuttle1)
         {
-            SetWord(54, _job.TargetX);
-            SetWord(56, _job.TargetZ);
-            SetBit(48, 0, true);
-            SetBit(16, 0, true);
-            SetBit(16, 1, false);
+            SetWordAddr(Db500Map.shuttle1X, StepToward(_job.S1StartX, _job.TargetX, e, n));
+            SetWordAddr(Db500Map.shuttle1Z, StepToward(_job.S1StartZ, _job.TargetZ, e, n));
+            SetWordAddr(Db500Map.shuttle1B, StepToward(_job.S1StartB, _job.TargetB, e, n));
+        }
+        else
+        {
+            SetWordAddr(Db500Map.shuttle2X, StepToward(_job.S2StartX, _job.TargetX, e, n));
+            SetWordAddr(Db500Map.shuttle2Z, StepToward(_job.S2StartZ, _job.TargetZ, e, n));
+            SetWordAddr(Db500Map.shuttle2B, StepToward(_job.S2StartB, _job.TargetB, e, n));
+        }
+
+        if (e >= n)
+        {
+            // Snap crane + selected shuttle to target and complete the handshake
+            SetWordAddr(Db500Map.craneX, _job.TargetX);
+            SetWordAddr(Db500Map.craneZ, _job.TargetZ);
+            if (selected == ShuttleSlot.Shuttle1)
+            {
+                SetWordAddr(Db500Map.shuttle1X, _job.TargetX);
+                SetWordAddr(Db500Map.shuttle1Z, _job.TargetZ);
+                SetWordAddr(Db500Map.shuttle1B, _job.TargetB);
+            }
+            else
+            {
+                SetWordAddr(Db500Map.shuttle2X, _job.TargetX);
+                SetWordAddr(Db500Map.shuttle2Z, _job.TargetZ);
+                SetWordAddr(Db500Map.shuttle2B, _job.TargetB);
+            }
+
+            SetBitAddr(Db500Map.plcDone, true);
+
+            SetBitAddr(Db500Map.craneFree, true);
+            SetBitAddr(Db500Map.craneBusy, false);
+            SetShuttleBusy(selected, false);
+
             _job.Done = true;
         }
+    }
+
+    private ShuttleSlot ResolveSelectedShuttle(JobState job)
+    {
+        if (job.SelectedShuttle is { } selected)
+            return selected;
+
+        selected = GetWordAddr(Db500Map.modeCraneShuttle) == 2
+            ? ShuttleSlot.Shuttle2
+            : ShuttleSlot.Shuttle1;
+
+        job.SelectedShuttle = selected;
+        SetShuttleBusy(selected, true);
+        return selected;
+    }
+
+    private void SetShuttleBusy(ShuttleSlot selected, bool busy)
+    {
+        if (selected == ShuttleSlot.Shuttle1)
+        {
+            SetBitAddr(Db500Map.shuttle1Free, !busy);
+            SetBitAddr(Db500Map.shuttle1Busy, busy);
+            return;
+        }
+
+        SetBitAddr(Db500Map.shuttle2Free, !busy);
+        SetBitAddr(Db500Map.shuttle2Busy, busy);
     }
 
     private static short StepToward(short start, short target, int elapsedTicks, int totalTicks)
@@ -246,6 +338,33 @@ public sealed class SimS7Backend : IS7Backend
 
         double ratio = elapsedTicks / (double)totalTicks;
         return (short)Math.Round(start + ((target - start) * ratio), MidpointRounding.AwayFromZero);
+    }
+
+    // ------------------------------------------------------------------
+    // Address-string helpers (keep callers in Db500Map terms, not offsets)
+    // ------------------------------------------------------------------
+    private void SetBitAddr(string address, bool value)
+    {
+        var p = ParseAddress(address);
+        SetBit(p.ByteOffset, p.BitOffset, value);
+    }
+
+    private void SetWordAddr(string address, short value)
+    {
+        var p = ParseAddress(address);
+        SetWord(p.ByteOffset, value);
+    }
+
+    private short GetWordAddr(string address)
+    {
+        var p = ParseAddress(address);
+        return GetWord(p.ByteOffset);
+    }
+
+    private static (int Byte, int Bit) Off(string address)
+    {
+        var p = ParseAddress(address);
+        return (p.ByteOffset, p.BitOffset);
     }
 
     private static ParsedAddress ParseAddress(string address)
@@ -327,24 +446,43 @@ public sealed class SimS7Backend : IS7Backend
         Byte
     }
 
+    private enum ShuttleSlot
+    {
+        Shuttle1,
+        Shuttle2
+    }
+
     private readonly record struct ParsedAddress(AddressKind Kind, int ByteOffset, int BitOffset);
 
     private sealed class JobState
     {
-        public JobState(int commandBit, short startX, short startZ, short targetX, short targetZ)
+        public JobState(
+            int commandBit,
+            short craneStartX, short craneStartZ,
+            short s1StartX, short s1StartZ, short s1StartB,
+            short s2StartX, short s2StartZ, short s2StartB,
+            short targetX, short targetZ, short targetB)
         {
             CommandBit = commandBit;
-            StartX = startX;
-            StartZ = startZ;
-            TargetX = targetX;
-            TargetZ = targetZ;
+            CraneStartX = craneStartX; CraneStartZ = craneStartZ;
+            S1StartX = s1StartX; S1StartZ = s1StartZ; S1StartB = s1StartB;
+            S2StartX = s2StartX; S2StartZ = s2StartZ; S2StartB = s2StartB;
+            TargetX = targetX; TargetZ = targetZ; TargetB = targetB;
         }
 
         public int CommandBit { get; }
-        public short StartX { get; }
-        public short StartZ { get; }
+        public short CraneStartX { get; }
+        public short CraneStartZ { get; }
+        public short S1StartX { get; }
+        public short S1StartZ { get; }
+        public short S1StartB { get; }
+        public short S2StartX { get; }
+        public short S2StartZ { get; }
+        public short S2StartB { get; }
         public short TargetX { get; }
         public short TargetZ { get; }
+        public short TargetB { get; }
+        public ShuttleSlot? SelectedShuttle { get; set; }
         public int ElapsedTicks { get; set; }
         public bool Done { get; set; }
     }

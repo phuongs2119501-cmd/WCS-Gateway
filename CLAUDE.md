@@ -78,50 +78,16 @@ Standalone console app on port 9000. Two commands: `PING` → `PONG`, `GET_STATU
 
 ## Cross-workspace coordination (wcs-mcp)
 
-This workspace is plugged into the shared **wcs-mcp** server (`D:/Sources/WCS-MCP`) — a tiny stdio MCP server backed by SQLite that lets PM agents share rule docs and exchange durable handoff messages without manual copy-paste.
+You are `gateway-pm` (PLC / hardware gateway) on the shared **wcs-mcp** team (stdio MCP server at `D:/Sources/WCS-MCP`), alongside `be-pm` (`D:/Sources/WCS-Application`), `fe-pm` (`D:/Sources/WCS-FE`), `wcs-design` (`D:/Sources/WHS`, the 3D layout designer; owns `contract.warehouse-layout`), and the human `po`. Message **any** member directly — including `fe-pm` when a hardware fact affects the UI, or `wcs-design` if a layout assumption conflicts with hardware reality — no fixed pairs, no asking the PO to ferry. Identity is convention, not auth: always pass `gateway-pm`; never claim to be another member.
 
-**Your identity on that server:** `gateway-pm`. The primary counterpart is `be-pm` (WCS-Application). The FE counterpart is `fe-pm` (indirect — you usually don't need to message FE directly). The human PO is `po`.
+**Session start:** `read_messages({ for: "gateway-pm", unread_only: true })`, then `whoami({})`; `ack_message({ id })` **immediately** on anything you act on (ack first, reply second — survives a mid-turn restart).
 
-**At every session start, run this first** (before any code work):
+**Reach a teammate** (full mechanics live in the skill bodies, not here):
+- `/post` — guided send (recipient + kind menus).
+- `notify-member` skill — FYI + wake one teammate.
+- `consult-member` skill — ask one teammate and block for their reply.
+- `convene-team` skill — broadcast to all + collect everyone's take.
 
-```
-whoami({})                                               ← confirm server live, scan known_parties for typos
-read_messages({ for: "gateway-pm", unread_only: true })
-get_doc({ name: "rules.wcs-network" })                   ← project roster; if DOC_NOT_FOUND see bootstrap note below
-get_doc({ name: "rules.shared" })                        ← shared rules (use if_none_match to cache)
-```
+**Share durable output** another member depends on (a `contract.plc.*`/decision change) via `put_doc` + `post_message`. Doc-naming, versioning, and token-saving (`content_hash` caching) conventions: `get_doc({ name: "rules.shared" })` and `D:/Sources/WCS-MCP/docs/usage.md`.
 
-> **Bootstrap:** If `rules.wcs-network` returns `DOC_NOT_FOUND`, create it once:
-> `put_doc({ name: "rules.wcs-network", content: "be-pm=D:/Sources/WCS-Application | fe-pm=D:/Sources/WCS-FE | gateway-pm=D:/Sources/WCS-Gateway | po=human | wcs-mcp-pm=D:/Sources/WCS-MCP", author: "gateway-pm", expected_version: 0 })`
-
-For each message you act on: `ack_message({ id })` **immediately** (ack first, reply second — prevents double-processing if session restarts mid-turn).
-
-**When to write to the server** (use `author: "gateway-pm"` / `from: "gateway-pm"` on every call):
-
-- A PLC protocol change that affects what BE sends/receives → `put_doc({ name: "contract.plc.<area>", content: "<spec>", author: "gateway-pm" })` AND `post_message({ from: "gateway-pm", to: "be-pm", topic: "<area> changed", body: "...", refs: ["contract.plc.<area>"] })`.
-- A frozen Gateway-side decision → `put_doc({ name: "decision.<id>", content: "..." })`.
-- Gateway-specific durable knowledge → `put_doc({ name: "rules.gateway", ... })`.
-
-**Identity is by convention, not auth.** Always pass `gateway-pm`; never claim to be `be-pm`, `fe-pm`, or `po`.
-
-**Doc name conventions:** `rules.<scope>`, `contract.plc.<area>`, `contract.<area>`, `spec.<feature>`, `decision.<id>`.
-
-#### Token-saving & safety tools (use these by default)
-
-- **`whoami({})` once per session** — confirms live server, returns `known_parties`; flag typos, don't mirror them.
-- **Re-reading a doc? Cache `content_hash`** then `get_doc({ name, if_none_match: "<hash>" })` — returns `{ not_modified: true }` if unchanged, near-zero tokens.
-- **Just need version/size? Use `get_doc_meta({ name })`** — no content, cheap.
-- **Writing a shared doc? Pass `expected_version`** — read current version first, then `put_doc({ ..., expected_version })` to avoid clobbering be-pm's edits. `expected_version: 0` = create-only.
-
-Full workflow + tool reference: `D:/Sources/WCS-MCP/docs/usage.md`.
-
-### Talking to be-pm directly (don't ask the PO to ferry)
-
-When you need something from the BE side, **talk to `be-pm` directly**.
-
-- **Heads-up / PLC contract change shipped** → `post_message({ from: "gateway-pm", to: "be-pm", topic: "...", body: "..." })`, then immediately invoke the `notify-peer` skill (`.claude/skills/notify-peer.md`) to wake be-pm headlessly so they read it in ~30s.
-- **You need their answer before this turn can finish** (e.g. "what COMMAND shape does BE actually send?", "does BE expect ack before or after PLC executes?") → use the `consult-peer` skill (`.claude/skills/consult-peer.md`). Topic must start with `consult.`.
-
-**One-level-deep wake rule.** If your *own* session was started by a `claude --print` wake from be-pm (you'll see "You were woken by a sender-side wake from be-pm" at the top of your prompt), do **NOT** invoke `notify-peer` or `consult-peer`. Read, reply if useful, ack, stop. This prevents A→B→A→B runaway loops.
-
-If the question is open-ended or expects more than one round-trip, take it to the PO instead.
+**One-level-deep wake rule.** If your own session was started by a wake/convene (noted at the top of your prompt), do **NOT** invoke notify-member/consult-member/convene-team after replying — read, reply, ack, stop. This prevents A→B→A→B runaway loops; honor it. Open-ended multi-round debates go to the PO instead.

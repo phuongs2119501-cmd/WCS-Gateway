@@ -11,4 +11,18 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="S7netplus" Version="0.20.0" />
   </ItemGroup>
+
+  <!--
+    Regenerate Plc/Db500Map.g.cs from Config/db500-keys.json before compiling.
+    Runs only when the JSON is newer than the generated file (incremental).
+    This prevents the "edited the JSON but the change didn't take effect" trap:
+    the runtime reads Db500Map.g.cs, not the JSON.
+  -->
+  <Target Name="GenerateDb500Map"
+          BeforeTargets="BeforeCompile;CoreCompile"
+          Inputs="Config/db500-keys.json"
+          Outputs="Plc/Db500Map.g.cs">
+    <Exec Command="dotnet run --project &quot;$(MSBuildProjectDirectory)/../../tools/Db500MapGen/Db500MapGen.csproj&quot; --configuration $(Configuration)"
+          WorkingDirectory="$(MSBuildProjectDirectory)/../.." />
+  </Target>
 </Project>

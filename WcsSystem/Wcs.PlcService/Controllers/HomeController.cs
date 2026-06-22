@@ -27,57 +27,49 @@ namespace Wcs.PlcService.Controllers
 // Dashboard page logic has been moved to TestTools/wcs_monitor.html
 
         //
-        // 📡 API: Dashboard Status
+        // 📡 API: Owner-compatible flat status (GET /api/status)
+        //   Same SystemState as our nested GET /status, reshaped to the field names WMS already
+        //   consumes from main's SendDataAPI, so WCS sees one stable contract across versions.
+        //   Fields not yet wired by our services (gateExport, done/fail, directionBlock2) are
+        //   emitted as defaults until those real-PLC keys are bound (binding deferred). See SPEC-GW-006.
         //
         [HttpGet("/api/status")]
         public IActionResult Status()
         {
             return Json(new
             {
-                plc1 = _state.Plc1Connected,
-                plc2 = _state.Plc2Connected,
+                plc1 = _plc1.IsConnected,
+                plc2 = _plc2.IsConnected,
 
                 barcode1 = _state.Barcode1,
-                barcode2 = _state.Barcode2,
+                barcodeOk1 = _state.BarcodeOk1,
+                barcodeNg1 = _state.BarcodeNg1,
+                gateImport1 = _state.Gate1,
+                gateExport1 = 0,
+                gate1 = _state.Gate1,
 
-                crane1 = new
-                {
-                    x = _state.Crane1.X,
-                    z = _state.Crane1.Z,
-                    busy = _state.Crane1.Busy,
-                    free = _state.Crane1.Free,
-                    error = _state.Crane1.Error,
-                    errorCode = _state.Crane1.ErrorCode
-                },
-                crane2 = new
-                {
-                    x = _state.Crane2.X,
-                    z = _state.Crane2.Z,
-                    busy = _state.Crane2.Busy,
-                    free = _state.Crane2.Free,
-                    error = _state.Crane2.Error,
-                    errorCode = _state.Crane2.ErrorCode
-                },
-                shuttle1 = new
-                {
-                    x = _state.Shuttle1.X,
-                    z = _state.Shuttle1.Z,
-                    b = _state.Shuttle1.B,
-                    busy = _state.Shuttle1.Busy,
-                    free = _state.Shuttle1.Free,
-                    error = _state.Shuttle1.Error,
-                    errorCode = _state.Shuttle1.ErrorCode
-                },
-                shuttle2 = new
-                {
-                    x = _state.Shuttle2.X,
-                    z = _state.Shuttle2.Z,
-                    b = _state.Shuttle2.B,
-                    busy = _state.Shuttle2.Busy,
-                    free = _state.Shuttle2.Free,
-                    error = _state.Shuttle2.Error,
-                    errorCode = _state.Shuttle2.ErrorCode
-                }
+                barcode2 = _state.Barcode2,
+                barcodeOk2 = _state.BarcodeOk2,
+                barcodeNg2 = _state.BarcodeNg2,
+                gateImport2 = _state.Gate2,
+                gateExport2 = 0,
+                gate2 = _state.Gate2,
+
+                crane1 = _state.Crane1,
+                crane2 = _state.Crane2,
+                shuttle1 = _state.Shuttle1,
+                shuttle2 = _state.Shuttle2,
+
+                system1 = _state.System1,
+                system2 = _state.System2,
+
+                done1 = false,
+                fail1 = false,
+                done2 = false,
+                fail2 = false,
+
+                directionBlock2_Plc1 = 0,
+                directionBlock2_Plc2 = 0
             });
         }
     }
