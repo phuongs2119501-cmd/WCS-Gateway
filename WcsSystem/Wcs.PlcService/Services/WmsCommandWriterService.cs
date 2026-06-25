@@ -6,14 +6,17 @@ namespace Wcs.PlcService.Services
     public class WmsCommandWriterService
     {
         private readonly Plc1Connector _plc1;
+        private readonly Models.SystemState _state;
 
-        public WmsCommandWriterService(Plc1Connector plc1)
+        public WmsCommandWriterService(Plc1Connector plc1, Models.SystemState state)
         {
             _plc1 = plc1;
+            _state = state;
         }
 
         public void WriteCommandToPlc(ProcessingDataReceive payload)
         {
+            _state.LastLocation = payload;
             try
             {
                 if (payload.CommandType.HasValue) _plc1.TryWriteInt16(Wcs.PlcService.DataMappingPlc.DataPlc1.CMD_TYPE, payload.CommandType.Value);

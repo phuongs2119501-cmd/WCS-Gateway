@@ -9,5 +9,8 @@ namespace Wcs.PlcService.Models
 
         // Data PLC2 mapping
         public DataPlc2 DataPlc2 { get; set; } = new();
+
+        // Data received from WMS
+        public ConnectingWcs.ProcessingDataReceive LastLocation { get; set; } = new();
     }
 }

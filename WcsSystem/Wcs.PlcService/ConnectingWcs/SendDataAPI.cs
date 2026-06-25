@@ -41,6 +41,7 @@ public class WcsStatusSendController : ControllerBase
         return Ok(new
         {
             plc1 = _state.DataPlc1.Connected,
+            lastLocation = _state.LastLocation,
             stateSystem = _state.DataPlc1.System,
             currentPositionCrane = new 
             { 
