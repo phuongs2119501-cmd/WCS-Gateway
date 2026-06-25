@@ -456,12 +456,12 @@
 
       <!-- Hệ thống PLC 1 -->
       <div class="card">
-        <div class="card-title">Hệ Thống</div>
+        <div class="card-title">STATE SYSTEM</div>
         <div class="row"><span class="label">Chế Độ Chạy</span><span id="sy1-mode">--</span></div>
-        <div class="row"><span class="label">Hệ Thống Đang Chạy</span><span id="sy1-run">--</span></div>
-        <div class="row"><span class="label">Dừng Khẩn Cấp (Stop)</span><span id="sy1-stop">--</span></div>
+        <div class="row"><span class="label">Trạng Thái Bận (Busy)</span><span id="sy1-busy">--</span></div>
+        <div class="row"><span class="label">Trạng Thái Rảnh (Free)</span><span id="sy1-free">--</span></div>
         <div class="row"><span class="label">Trạng Thái Lỗi</span><span id="sy1-err">--</span></div>
-        <div class="row"><span class="label">Mã Lỗi Hệ Thống</span><span class="value" id="sy1-code">--</span></div>
+        <div class="row"><span class="label">Mã Lỗi Hệ thống</span><span class="value" id="sy1-code">--</span></div>
       </div>
 
     </div>
@@ -511,12 +511,12 @@
 
       <!-- Hệ thống PLC 2 -->
       <div class="card">
-        <div class="card-title">Hệ Thống</div>
+        <div class="card-title">STATE SYSTEM</div>
         <div class="row"><span class="label">Chế Độ Chạy</span><span id="sy2-mode">--</span></div>
-        <div class="row"><span class="label">Hệ Thống Đang Chạy</span><span id="sy2-run">--</span></div>
-        <div class="row"><span class="label">Dừng Khẩn Cấp (Stop)</span><span id="sy2-stop">--</span></div>
+        <div class="row"><span class="label">Trạng Thái Bận (Busy)</span><span id="sy2-busy">--</span></div>
+        <div class="row"><span class="label">Trạng Thái Rảnh (Free)</span><span id="sy2-free">--</span></div>
         <div class="row"><span class="label">Trạng Thái Lỗi</span><span id="sy2-err">--</span></div>
-        <div class="row"><span class="label">Mã Lỗi Hệ Thống</span><span class="value" id="sy2-code">--</span></div>
+        <div class="row"><span class="label">Mã Lỗi Hệ thống</span><span class="value" id="sy2-code">--</span></div>
       </div>
 
       <!-- Kết quả lệnh PLC 2 -->
@@ -596,9 +596,8 @@
       </a>
     </div>
   </div>
-
   <script>
-    const API = "/api/status";
+    const API = "http://localhost:5000/api/status";
     const statusBar = document.getElementById("status-bar");
 
     function barcodeBadge(ok, ng) {
@@ -691,16 +690,16 @@
         // System State PLC 1
         const sy1 = data.system1 || {};
         setHtml("sy1-mode", boolBadge(sy1.auto, "AUTO", "free", "MANUAL"));
-        setHtml("sy1-run", boolBadge(sy1.running, "RUNNING", "free", "STOPPED"));
-        setHtml("sy1-stop", boolBadge(sy1.stop, "STOP", "busy", "OK"));
+        setHtml("sy1-busy", boolBadge(sy1.busy, "BUSY", "busy", "OK"));
+        setHtml("sy1-free", boolBadge(sy1.free, "FREE", "free", "BUSY"));
         setHtml("sy1-err", boolBadge(sy1.error, "ERROR", "fail", "OK"));
         setText("sy1-code", sy1.errorCode);
 
         // System State PLC 2
         const sy2 = data.system2 || {};
         setHtml("sy2-mode", boolBadge(sy2.auto, "AUTO", "free", "MANUAL"));
-        setHtml("sy2-run", boolBadge(sy2.running, "RUNNING", "free", "STOPPED"));
-        setHtml("sy2-stop", boolBadge(sy2.stop, "STOP", "busy", "OK"));
+        setHtml("sy2-busy", boolBadge(sy2.busy, "BUSY", "busy", "OK"));
+        setHtml("sy2-free", boolBadge(sy2.free, "FREE", "free", "BUSY"));
         setHtml("sy2-err", boolBadge(sy2.error, "ERROR", "fail", "OK"));
         setText("sy2-code", sy2.errorCode);
 
