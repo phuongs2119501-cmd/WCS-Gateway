@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "g4wspNkjzwc=",
+  "dgSpecHash": "sdAB/wrzzGs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",

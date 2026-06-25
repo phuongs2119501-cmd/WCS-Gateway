@@ -28,3 +28,33 @@ C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\scopedcss\bundle\Wcs.PlcService.styles.css
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.sourcelink.json
 C:\Users\Admin\Desktop\TIN QUANG\6. SEAPREMEXCO\11.WCS\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.staticwebassets.runtime.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\appsettings.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.staticwebassets.runtime.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.exe
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.deps.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.runtimeconfig.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.dll
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\Wcs.PlcService.pdb
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\bin\Debug\net8.0\S7.Net.dll
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.csproj.AssemblyReference.cache
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.AssemblyInfoInputs.cache
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.AssemblyInfo.cs
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.sourcelink.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets\msbuild.Wcs.PlcService.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets\msbuild.build.Wcs.PlcService.props
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Wcs.PlcService.props
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Wcs.PlcService.props
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\scopedcss\bundle\Wcs.PlcService.styles.css
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcS.8C9632C8.Up2Date
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.dll
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\refint\Wcs.PlcService.dll
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.pdb
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\Wcs.PlcService.genruntimeconfig.cache
+C:\Users\Admin\Desktop\TIN QUANG\16. TRIEN LAM 2026 SECC\5. WCS\WCS-Gateway\WcsSystem\Wcs.PlcService\obj\Debug\net8.0\ref\Wcs.PlcService.dll

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "4xEIySsvK0o2LghcZYLH99iqk8FDhfL8K2CecZi8i0c=",
+  "Hash": "XBQwT4yIawf9NyGfF8ZzaOdsiETv3ktaJ5rafA2DaCU=",
   "Source": "Wcs.PlcService",
   "BasePath": "_content/Wcs.PlcService",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "Wcs.PlcService\\wwwroot",
       "Source": "Wcs.PlcService",
-      "ContentRoot": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\wwwroot\\",
       "BasePath": "_content/Wcs.PlcService",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\wwwroot\\images\\logo_tin_quang.png",
+      "Identity": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\wwwroot\\images\\logo_tin_quang.png",
       "SourceId": "Wcs.PlcService",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\wwwroot\\",
       "BasePath": "_content/Wcs.PlcService",
       "RelativePath": "images/logo_tin_quang.png",
       "AssetKind": "All",

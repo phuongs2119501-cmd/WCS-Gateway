@@ -1785,11 +1785,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
       "projectName": "Wcs.PlcService",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
+      "projectPath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\Wcs.PlcService.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\6. SEAPREMEXCO\\11.WCS\\WcsSystem\\Wcs.PlcService\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Desktop\\TIN QUANG\\16. TRIEN LAM 2026 SECC\\5. WCS\\WCS-Gateway\\WcsSystem\\Wcs.PlcService\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
