@@ -35,6 +35,9 @@ namespace Wcs.PlcService.Services
 		private const string PLC1_DONE = Db500Map.plcDone;
 		private const string PLC2_DONE = Db500Map.plcDone;
 
+		private const string PLC1_FAIL = Db500Map.plcFail;
+		private const string PLC2_FAIL = Db500Map.plcFail;
+
 		//
 		// MODE CRANE SHUTTLE  (Int, offset 2.0)
 		//  = 0: chưa gửi gì
@@ -329,6 +332,14 @@ namespace Wcs.PlcService.Services
 					_plc1.TryWriteBool(cmdAddr, false);
 					FinishJob();
 				}
+				// Đọc tín hiệu FAIL từ PLC1 — tránh job treo mãi nếu lệnh thất bại
+				// (Giả định FAIL được latch tới khi WCS reset cmd; chờ PLC-owner xác nhận Q1)
+				else if (_plc1.TryRead<bool>(PLC1_FAIL, out bool fail1) && fail1)
+				{
+					Console.WriteLine("PLC1 FAIL → RESET CMD");
+					_plc1.TryWriteBool(cmdAddr, false);
+					FinishJob();
+				}
 			}
 			else if (_targetPlc == 2)
 			{
@@ -336,6 +347,14 @@ namespace Wcs.PlcService.Services
 				if (_plc2.TryRead<bool>(PLC2_DONE, out bool done2) && done2)
 				{
 					Console.WriteLine("PLC2 DONE → RESET CMD");
+					_plc2.TryWriteBool(cmdAddr, false);
+					FinishJob();
+				}
+				// Đọc tín hiệu FAIL từ PLC2 — tránh job treo mãi nếu lệnh thất bại
+				// (Giả định FAIL được latch tới khi WCS reset cmd; chờ PLC-owner xác nhận Q1)
+				else if (_plc2.TryRead<bool>(PLC2_FAIL, out bool fail2) && fail2)
+				{
+					Console.WriteLine("PLC2 FAIL → RESET CMD");
 					_plc2.TryWriteBool(cmdAddr, false);
 					FinishJob();
 				}

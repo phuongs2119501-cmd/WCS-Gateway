@@ -31,16 +31,24 @@ public class StatusController : Controller
             barcodeOk1 = _state.BarcodeOk1,
             barcodeNg1 = _state.BarcodeNg1,
             gate1 = _state.Gate1,
+            gateExport1 = _state.GateExport1,
             barcode2 = _state.Barcode2,
             barcodeOk2 = _state.BarcodeOk2,
             barcodeNg2 = _state.BarcodeNg2,
             gate2 = _state.Gate2,
+            gateExport2 = _state.GateExport2,
             crane1   = _state.Crane1,
             crane2   = _state.Crane2,
             shuttle1 = _state.Shuttle1,
             shuttle2 = _state.Shuttle2,
             system1  = _state.System1,   // Trạng thái hệ thống PLC1
             system2  = _state.System2,    // Trạng thái hệ thống PLC2
+            done1 = _state.Done1,
+            fail1 = _state.Fail1,
+            done2 = _state.Done2,
+            fail2 = _state.Fail2,
+            directionBlock2_Plc1 = _state.DirectionBlock2_1,
+            directionBlock2_Plc2 = _state.DirectionBlock2_2,
             lastLocation = _state.LastLocation,
             modeCraneShuttle = _state.ModeCraneShuttle
         });

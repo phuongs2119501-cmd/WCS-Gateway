@@ -37,9 +37,10 @@ namespace Wcs.PlcService.Services
         private const string BARCODE_NG = Db500Map.barcodeNg;  // Biến barcode không hợp lệ
 
         //
-        // GATE READING (DB500.DBW70)
+        // GATE READING — Import (DBW78) + Export (DBW80)
         //
-        private const string GATE_ADDRESS = Db500Map.gate;
+        private const string GATE_ADDRESS        = Db500Map.gate;        // DBW78
+        private const string GATE_EXPORT_ADDRESS = Db500Map.gateExport;  // DBW80
 
         public PlcBarcodeReader(Plc1Connector plc1, Plc2Connector plc2, SystemState state)
         {
@@ -60,19 +61,23 @@ namespace Wcs.PlcService.Services
             var b1 = ReadBarcodeFrom(_plc1);
             var b2 = ReadBarcodeFrom(_plc2);
 
-            // Đọc thêm mã Gate hiện tại
+            // Đọc thêm mã Gate hiện tại (Import + Export)
             _plc1.TryRead<ushort>(GATE_ADDRESS, out ushort gate1);
+            _plc1.TryRead<ushort>(GATE_EXPORT_ADDRESS, out ushort gateExport1);
             _plc2.TryRead<ushort>(GATE_ADDRESS, out ushort gate2);
+            _plc2.TryRead<ushort>(GATE_EXPORT_ADDRESS, out ushort gateExport2);
 
             // Chỉ log khi barcode thay đổi
-            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\" (Gate {gate1})"); _lastBarcode1 = b1; }
-            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\" (Gate {gate2})"); _lastBarcode2 = b2; }
+            if (b1 != _lastBarcode1) { Console.WriteLine($"[BarcodeReader] PLC1 = \"{b1}\" (Gate Import {gate1}, Export {gateExport1})"); _lastBarcode1 = b1; }
+            if (b2 != _lastBarcode2) { Console.WriteLine($"[BarcodeReader] PLC2 = \"{b2}\" (Gate Import {gate2}, Export {gateExport2})"); _lastBarcode2 = b2; }
 
             _state.Barcode1 = b1;
             _state.Gate1 = gate1;
+            _state.GateExport1 = gateExport1;
 
             _state.Barcode2 = b2;
             _state.Gate2 = gate2;
+            _state.GateExport2 = gateExport2;
 
             // Đọc trạng thái OK, NG từ PLC 1
             if (_plc1.TryRead<bool>(BARCODE_OK, out bool ok1) &&

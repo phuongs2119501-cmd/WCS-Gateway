@@ -29,6 +29,11 @@ namespace Wcs.PlcService.Services
         private const string ERROR      = Db500Map.sysError;
         private const string ERROR_CODE = Db500Map.sysErrorCode;
 
+        // Tín hiệu hoàn thành + hướng block 2 (cùng địa chỉ cho cả 2 PLC, khác connector)
+        private const string PLC_DONE         = Db500Map.plcDone;          // DBX52.0
+        private const string PLC_FAIL         = Db500Map.plcFail;          // DBX52.1
+        private const string DIRECTION_BLOCK2 = Db500Map.directionBlock2;  // DBW84
+
         // ── Track thay đổi — chỉ log khi khác lần trước ────
         private bool   _p1Auto, _p1Running, _p1Stop, _p1Error;
         private ushort _p1Code = 0;
@@ -81,6 +86,16 @@ namespace Wcs.PlcService.Services
                     _p1Code = code1;
                 }
             }
+
+            // Tín hiệu hoàn thành job — đọc liên tục để hiển thị lên status
+            if (_plc1.TryRead<bool>(PLC_DONE, out bool done1))
+                _state.Done1 = done1;
+            if (_plc1.TryRead<bool>(PLC_FAIL, out bool fail1))
+                _state.Fail1 = fail1;
+
+            // Direction Block 2 (DBW84)
+            if (_plc1.TryRead<ushort>(DIRECTION_BLOCK2, out ushort dir1))
+                _state.DirectionBlock2_1 = dir1;
         }
 
         // ── ĐỌC TỪ PLC2 ─────────────────────────────────────
@@ -114,6 +129,16 @@ namespace Wcs.PlcService.Services
                     _p2Code = code2;
                 }
             }
+
+            // Tín hiệu hoàn thành job — đọc liên tục để hiển thị lên status
+            if (_plc2.TryRead<bool>(PLC_DONE, out bool done2))
+                _state.Done2 = done2;
+            if (_plc2.TryRead<bool>(PLC_FAIL, out bool fail2))
+                _state.Fail2 = fail2;
+
+            // Direction Block 2 (DBW84)
+            if (_plc2.TryRead<ushort>(DIRECTION_BLOCK2, out ushort dir2))
+                _state.DirectionBlock2_2 = dir2;
         }
     }
 }
