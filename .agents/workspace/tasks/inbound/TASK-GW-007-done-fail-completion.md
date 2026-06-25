@@ -3,7 +3,8 @@
 - **Spec:** specs/SPEC-GW-007-done-fail-completion.md
 - **Phase:** inbound
 - **Dispatched:** 2026-06-25 by gateway-pm
-- **Status:** reported
+- **Status:** done (committed 0cc8cd1, build clean — handed to po for live test 2026-06-25)
+- **Owner answers (2026-06-25):** Q1/Q2 fail→PLC stops job, surface-only no retry (matches impl) · Q3 offsets confirmed · Q4 one crane+shuttle per PLC (item D closed) · Q5 PLC zeroes offsets on done → completion-latch follow-up = TASK-GW-008
 
 ## Objective (one line)
 Port the parses that exist on `main` but are missing on feat — done/fail (stop hung jobs), directionBlock2 (DBW84), gateExport (DBW80) — and surface them in status.

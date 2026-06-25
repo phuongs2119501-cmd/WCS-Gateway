@@ -54,10 +54,17 @@ Same offset for every PLC; read via its own connector (`_plc1` / `_plc2`), match
 - [ ] `dotnet build` (WcsSystem/) passes.
 - [ ] Behavior validated against `SimS7Backend` (it already toggles `plcDone`); add/confirm a fail-path sim case if feasible.
 
-## Open questions (for gateway-PLC-owner via po) — answer Q1/Q2 to unblock the fail path
-1. Does the ladder actually raise `plcFail` (DBX52.1), and is it latched until WCS resets the cmd bit, or pulsed?
-2. On `fail`, what should WCS do beyond reset — retry, alarm, or just surface? (affects whether this ties into contract.inbound-retry / contract.manual-task-retry)
-3. Confirm done/fail are per-PLC at the same DBX52.0/.1 (assumed yes, matches main).
+## Open questions — ANSWERED by PLC owner 2026-06-25
+1. **(Q1/Q2) On fail:** the PLC fails the flow and **stops the job itself**. → WCS detects fail → reset cmd → FinishJob, **surface-only, NO auto-retry**. Treated as latched (persists since the job is stopped). Current implementation matches. ✅
+2. **(Q3) Offsets confirmed:** done=DBX52.0, fail=DBX52.1, same for both PLCs. ✅
+3. **(Q4) Topology:** ONE crane + ONE shuttle per PLC. → Item D RESOLVED, feat is correct, do NOT port main's crane2/shuttle2 offsets. ✅
+4. **(Q5) On done, the PLC zeroes ALL model offsets** (positions reset to 0 when completion is reported to the Gateway).
 
-## Follow-up (AFTER GW-007 ships — do not start until Q1 above is resolved)
-- **D — crane2/shuttle2 topology.** Decide: one crane+shuttle per PLC (feat, same offset via two connectors) vs two cranes+two shuttles per PLC (main, distinct DBW62/64 + DBW72/74/76). Per po: work this only after the done/fail path (Q1) is resolved. Will become its own SPEC/TASK once the PLC owner confirms the wiring.
+## Follow-up — driven by Q5 (NEW)
+The PLC zeroing offsets on done means:
+- **Serviced cell must come from `LastLocation` (dispatch echo), not from reading `crane.{X,Z}` after done** (which is 0). Confirms dispatch-echo LastLocation is the authoritative cell source; a per-crane LastLocation reading positions would be wrong.
+- **`done` is transient → `/status` pollers (be-pm, 1s) can miss it.** Recommend latching the last completion in `FinishJob()`: `{ cell (LastLocation snapshot), outcome (done|fail), timestamp }`, persisted until next dispatch, exposed in status. This becomes the authoritative completion signal that replaces be-pm's busy→free heuristic.
+- **Positions read 0 after a job = idle/reset, not "at origin."** Document for be-pm/FE.
+
+## Resolved / closed
+- **D — crane2/shuttle2 topology:** CLOSED by Q4 (one each per PLC). No code; main's extra offsets intentionally unused.
