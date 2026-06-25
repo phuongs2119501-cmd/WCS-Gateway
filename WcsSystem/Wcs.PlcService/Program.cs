@@ -64,6 +64,7 @@ builder.Services.AddSingleton<PlcBarcodeReader>();
 builder.Services.AddSingleton<CraneService>();
 builder.Services.AddSingleton<ShuttleService>();
 builder.Services.AddSingleton<SystemService>();
+builder.Services.AddSingleton<WmsCommandWriterService>();
 
 
 
