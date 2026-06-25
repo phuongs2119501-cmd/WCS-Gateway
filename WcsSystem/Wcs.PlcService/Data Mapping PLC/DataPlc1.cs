@@ -15,7 +15,7 @@ namespace Wcs.PlcService.DataMappingPlc
         public const string REQ_TRANSFER_PALLET = "DB500.DBX0.2";
         public const string REQ_AUTORUN_SYSTEM  = "DB500.DBX0.3";
         public const string REQ_STOP_SYSTEM     = "DB500.DBX0.4";
-        public const string MODE_CRANE_SHUTTLE   = "DB500.DBW2";
+        public const string CMD_TYPE   = "DB500.DBW2";
 
         // Coordinates Target Input
         public const string XIN  = "DB500.DBW4";
@@ -66,9 +66,9 @@ namespace Wcs.PlcService.DataMappingPlc
 
         // System 1 State
         public const string AUTO_MODE  = "DB500.DBX54.0";
-        public const string RUNNING    = "DB500.DBX54.1";
-        public const string STOP       = "DB500.DBX54.2";
-        public const string ERROR      = "DB500.DBX54.3";
+        public const string BUSY       = "DB500.DBX54.1";
+        public const string FREE       = "DB500.DBX54.2";
+        public const string Error      = "DB500.DBX54.3";
         public const string ERROR_CODE = "DB500.DBW56";
 
         // Crane 1 Position

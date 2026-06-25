@@ -66,9 +66,9 @@ namespace Wcs.PlcService.DataMappingPlc
 
         // System 2 State
         public const string AUTO_MODE  = "DB500.DBX54.0";
-        public const string RUNNING    = "DB500.DBX54.1";
-        public const string STOP       = "DB500.DBX54.2";
-        public const string ERROR      = "DB500.DBX54.3";
+        public const string BUSY       = "DB500.DBX54.1";
+        public const string FREE       = "DB500.DBX54.2";
+        public const string Error      = "DB500.DBX54.3";
         public const string ERROR_CODE = "DB500.DBW56";
 
         // Crane 1 Position

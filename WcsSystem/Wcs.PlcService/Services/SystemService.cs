@@ -48,19 +48,19 @@ namespace Wcs.PlcService.Services
         private void ReadFromPlc1()
         {
             if (_plc1.TryRead<bool>(DataPlc1.AUTO_MODE, out bool auto)   &&
-                _plc1.TryRead<bool>(DataPlc1.RUNNING,   out bool run)    &&
-                _plc1.TryRead<bool>(DataPlc1.STOP,      out bool stop)   &&
-                _plc1.TryRead<bool>(DataPlc1.ERROR,     out bool err))
+                _plc1.TryRead<bool>(DataPlc1.BUSY,      out bool busy)   &&
+                _plc1.TryRead<bool>(DataPlc1.FREE,      out bool free)   &&
+                _plc1.TryRead<bool>(DataPlc1.Error,     out bool err))
             {
                 _state.DataPlc1.System.Auto    = auto;
-                _state.DataPlc1.System.Running = run;
-                _state.DataPlc1.System.Stop    = stop;
+                _state.DataPlc1.System.Busy    = busy;
+                _state.DataPlc1.System.Free    = free;
                 _state.DataPlc1.System.Error   = err;
 
-                if (!_init1 || auto != _p1Auto || run != _p1Running ||
-                     stop != _p1Stop || err != _p1Error)
+                if (!_init1 || auto != _p1Auto || busy != _p1Running ||
+                     free != _p1Stop || err != _p1Error)
                 {
-                    _p1Auto = auto; _p1Running = run; _p1Stop = stop; _p1Error = err;
+                    _p1Auto = auto; _p1Running = busy; _p1Stop = free; _p1Error = err;
                     _init1 = true;
                 }
             }
@@ -94,19 +94,19 @@ namespace Wcs.PlcService.Services
         private void ReadFromPlc2()
         {
             if (_plc2.TryRead<bool>(DataPlc2.AUTO_MODE, out bool auto)   &&
-                _plc2.TryRead<bool>(DataPlc2.RUNNING,   out bool run)    &&
-                _plc2.TryRead<bool>(DataPlc2.STOP,      out bool stop)   &&
-                _plc2.TryRead<bool>(DataPlc2.ERROR,     out bool err))
+                _plc2.TryRead<bool>(DataPlc2.BUSY,      out bool busy)   &&
+                _plc2.TryRead<bool>(DataPlc2.FREE,      out bool free)   &&
+                _plc2.TryRead<bool>(DataPlc2.Error,     out bool err))
             {
                 _state.DataPlc2.System.Auto    = auto;
-                _state.DataPlc2.System.Running = run;
-                _state.DataPlc2.System.Stop    = stop;
+                _state.DataPlc2.System.Busy    = busy;
+                _state.DataPlc2.System.Free    = free;
                 _state.DataPlc2.System.Error   = err;
 
-                if (!_init2 || auto != _p2Auto || run != _p2Running ||
-                    stop != _p2Stop || err != _p2Error)
+                if (!_init2 || auto != _p2Auto || busy != _p2Running ||
+                    free != _p2Stop || err != _p2Error)
                 {
-                    _p2Auto = auto; _p2Running = run; _p2Stop = stop; _p2Error = err;
+                    _p2Auto = auto; _p2Running = busy; _p2Stop = free; _p2Error = err;
                     _init2 = true;
                 }
             }

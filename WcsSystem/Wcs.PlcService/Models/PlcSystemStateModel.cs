@@ -10,10 +10,10 @@ namespace Wcs.PlcService.Models
     /// </summary>
     public class PlcSystemStateModel
     {
-        public bool Auto      { get; set; }   // DB500.DBX50.0
-        public bool Running   { get; set; }   // DB500.DBX50.1
-        public bool Stop      { get; set; }   // DB500.DBX50.2
-        public bool Error     { get; set; }   // DB500.DBX50.3
-        public int  ErrorCode { get; set; }   // DB500.DBW52
+        public bool Auto      { get; set; }   // DB500.DBX54.0
+        public bool Busy      { get; set; }   // DB500.DBX54.1
+        public bool Free      { get; set; }   // DB500.DBX54.2
+        public bool Error     { get; set; }   // DB500.DBX54.3
+        public int  ErrorCode { get; set; }   // DB500.DBW56
     }
 }
